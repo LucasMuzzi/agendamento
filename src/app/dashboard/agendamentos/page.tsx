@@ -356,10 +356,10 @@ export default function Agendamentos() {
                 nav_button_previous: "absolute left-1",
                 nav_button_next: "absolute right-1",
                 table: " w-full border-collapse space-y-1",
-                head_row: "flex w-full mt-2 pl-10 ",
+                head_row: "flex w-full mt-2 pl-8 ",
                 head_cell:
                   "text-muted-foreground rounded-md w-9 font-normal text-md",
-                row: "flex w-full mt-2 pl-10", // Aumente o valor de pl-4 conforme necessário
+                row: "flex w-full mt-2 pl-8", // Aumente o valor de pl-4 conforme necessário
                 cell: "text-center text-md p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
                 day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100",
               }}
@@ -440,9 +440,7 @@ export default function Agendamentos() {
                             onClick={(e) => {
                               e.stopPropagation();
                             }}
-                            className={`${
-                              isMobile ? "flex pl-7" : ""
-                            }`}
+                            className={`${isMobile ? "flex pl-7" : ""}`}
                           >
                             <WhatsappIcon className="h-5 w-5 text-green-500" />
                           </a>

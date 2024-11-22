@@ -2,10 +2,12 @@
 
 import { ReactNode, useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
+import { LoadingScreen } from "@/components/loading"; // Certifique-se de que o caminho esteja correto
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Estado de carregamento
 
   useEffect(() => {
     const handleResize = () => {
@@ -22,12 +24,22 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
+  // Função para simular o carregamento (remova isso e use um método real de carregamento)
+  const handleMenuClick = () => {
+    setIsLoading(true); // Ativa o estado de carregamento
+    setTimeout(() => {
+      setIsLoading(false); // Desativa o estado de carregamento após 2 segundos (simulação)
+    }, 2000); // Ajuste conforme necessário
+  };
+
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden ">
+      {isLoading && <LoadingScreen />} {/* Mostra o loading se isLoading for true */}
       <Sidebar
         isOpen={isSidebarOpen}
         onToggle={toggleSidebar}
         isMobile={isMobile}
+        onMenuClick={handleMenuClick} // Passa a função de clique do menu
       />
       <div className="flex-1 flex flex-col overflow-hidden">
         <main

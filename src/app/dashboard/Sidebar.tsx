@@ -21,9 +21,15 @@ interface SidebarProps {
   isOpen: boolean;
   onToggle: () => void;
   isMobile: boolean;
+  onMenuClick: () => void;
 }
 
-export default function Sidebar({ isOpen, onToggle, isMobile }: SidebarProps) {
+export default function Sidebar({
+  isOpen,
+  onToggle,
+  isMobile,
+  onMenuClick,
+}: SidebarProps) {
   const [logo] = useState("/placeholder.svg?height=50&width=50");
   const router = useRouter();
   const pathname = usePathname();
@@ -39,6 +45,7 @@ export default function Sidebar({ isOpen, onToggle, isMobile }: SidebarProps) {
 
   const handleMenuClick = () => {
     if (isMobile) onToggle();
+    onMenuClick(); 
   };
 
   return (
@@ -98,7 +105,10 @@ export default function Sidebar({ isOpen, onToggle, isMobile }: SidebarProps) {
             icon={<Menu className="w-5 h-5" />}
             isActive={pathname === "/dashboard/agendamentos"}
             isExpanded={isOpen}
-            onClick={handleMenuClick}
+            onClick={() => {
+              handleMenuClick(); // Chama a função de clique do menu
+              // Aqui você pode adicionar lógica adicional, se necessário
+            }}
           >
             Agendamentos
           </SidebarLink>
@@ -107,7 +117,9 @@ export default function Sidebar({ isOpen, onToggle, isMobile }: SidebarProps) {
             icon={<Users className="w-5 h-5" />}
             isActive={pathname === "/dashboard/clientes"}
             isExpanded={isOpen}
-            onClick={handleMenuClick}
+            onClick={() => {
+              handleMenuClick(); // Chama a função de clique do menu
+            }}
           >
             Cadastro de Clientes
           </SidebarLink>
@@ -116,7 +128,9 @@ export default function Sidebar({ isOpen, onToggle, isMobile }: SidebarProps) {
             icon={<Settings className="w-5 h-5" />}
             isActive={pathname === "/dashboard/configuracao"}
             isExpanded={isOpen}
-            onClick={handleMenuClick}
+            onClick={() => {
+              handleMenuClick(); // Chama a função de clique do menu
+            }}
           >
             Configurações
           </SidebarLink>
@@ -137,7 +151,6 @@ export default function Sidebar({ isOpen, onToggle, isMobile }: SidebarProps) {
       </aside>
 
       {/* Espaço para o conteúdo principal */}
-
       {isMobile && isOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-30"
