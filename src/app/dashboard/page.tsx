@@ -100,15 +100,31 @@ export default function DashboardHome() {
   }, []);
 
   const handleEditAgendamento = useCallback((agendamento: Agendamento) => {
- 
+    // Implement edit functionality
     console.log("Edit agendamento:", agendamento);
   }, []);
 
-  const handleDeleteAgendamento = useCallback((id: string) => {
-    // Implement delete functionality
-    console.log("Delete agendamento:", id);
-    setTodayAppointments((prev) => prev.filter((a) => a.id !== id));
-  }, []);
+  const handleDeleteAgendamento = useCallback(
+    async (id: string, horario: string) => {
+      try {
+        await agendamentoService.deletarHorario(id, horario);
+        setTodayAppointments((prev) =>
+          prev.map((agendamento) => {
+            if (agendamento.id === id) {
+              return {
+                ...agendamento,
+                horarios: agendamento.horarios.filter((h) => h !== horario),
+              };
+            }
+            return agendamento;
+          })
+        );
+      } catch (error) {
+        console.error("Erro ao deletar horário:", error);
+      }
+    },
+    [agendamentoService]
+  );
 
   const handleAgendamentoClick = useCallback((agendamento: Agendamento) => {
     setSelectedAgendamento(agendamento);
@@ -121,7 +137,7 @@ export default function DashboardHome() {
       <Card
         className={`flex-grow ${
           isMobile ? "w-[36vh]" : "w-full max-w-[1000px]"
-        } overflow-hidden h-[calc(49vh-2rem)] lg:h-[calc(100vh-2rem)]`}
+        } overflow-hidden h-[88vh] lg:h-[calc(100vh-2rem)]`}
       >
         <CardHeader>
           <CardTitle>Agendamentos de Hoje</CardTitle>
@@ -134,8 +150,8 @@ export default function DashboardHome() {
                 <TableHead>Nome</TableHead>
                 {!isMobile && <TableHead>Contato</TableHead>}
                 {!isMobile && <TableHead>Serviço</TableHead>}
-                {!isMobile && <TableHead>WhatsApp</TableHead>}
-                <TableHead>Ações</TableHead>
+                <TableHead>WhatsApp</TableHead>
+                {!isMobile && <TableHead>Ações</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -161,51 +177,55 @@ export default function DashboardHome() {
                     {!isMobile && (
                       <TableCell>{agendamento.tipoServico}</TableCell>
                     )}
+                    <TableCell>
+                      {agendamento.isWhatsapp && (
+                        <a
+                          href={`https://wa.me/${agendamento.contato.replace(
+                            /\D/g,
+                            ""
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
+                          className={`${isMobile ? "flex justify-center" : ""}`}
+                        >
+                          <WhatsappIcon className="h-5 w-5 text-green-500" />
+                        </a>
+                      )}
+                    </TableCell>
                     {!isMobile && (
                       <TableCell>
-                        {agendamento.isWhatsapp && (
-                          <a
-                            href={`https://wa.me/${agendamento.contato.replace(
-                              /\D/g,
-                              ""
-                            )}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <div className="flex space-x-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
                             onClick={(e) => {
                               e.stopPropagation();
+                              handleEditAgendamento(agendamento);
                             }}
                           >
-                            <WhatsappIcon className="h-5 w-5 text-green-500" />
-                          </a>
-                        )}
+                            <Edit className="h-4 w-4" />
+                            <span className="sr-only">Editar</span>
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteAgendamento(
+                                agendamento.id,
+                                agendamento.horario
+                              );
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                            <span className="sr-only">Deletar</span>
+                          </Button>
+                        </div>
                       </TableCell>
                     )}
-                    <TableCell>
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEditAgendamento(agendamento);
-                          }}
-                        >
-                          <Edit className="h-4 w-4" />
-                          <span className="sr-only">Editar</span>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteAgendamento(agendamento.id);
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4 text-red-500" />
-                          <span className="sr-only">Deletar</span>
-                        </Button>
-                      </div>
-                    </TableCell>
                   </TableRow>
                 ))}
             </TableBody>
@@ -250,7 +270,12 @@ export default function DashboardHome() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => handleEditAgendamento(selectedAgendamento!)}
+              onClick={() => {
+                setIsDetailsModalOpen(false);
+                if (selectedAgendamento) {
+                  handleEditAgendamento(selectedAgendamento);
+                }
+              }}
             >
               <Edit className="h-4 w-4" />
               <span className="sr-only">Editar</span>
@@ -259,7 +284,12 @@ export default function DashboardHome() {
               variant="ghost"
               size="icon"
               onClick={() => {
-                handleDeleteAgendamento(selectedAgendamento!.id);
+                if (selectedAgendamento) {
+                  handleDeleteAgendamento(
+                    selectedAgendamento.id,
+                    selectedAgendamento.horarios[0]
+                  );
+                }
                 setIsDetailsModalOpen(false);
               }}
             >

@@ -86,7 +86,7 @@ export default function Agendamentos() {
     const fetchAgendamentos = async () => {
       const userCookie = Cookies.get("info");
       if (!userCookie) {
-        console.error("User  cookie not found");
+        console.error("User cookie not found");
         return;
       }
 
@@ -98,7 +98,7 @@ export default function Agendamentos() {
         const agendamentosConvertidos: Agendamento[] = agendamentosData
           .filter((agendamento) => agendamento.userId === user.codUser)
           .map((agendamento) => ({
-            id: agendamento._id, // Use _id aqui
+            id: agendamento._id,
             data: new Date(agendamento.data),
             horarios: agendamento.horarios,
             nome: agendamento.nome,
@@ -160,17 +160,16 @@ export default function Agendamentos() {
     if (selectedDate && selectedTimes.length > 0 && nome && contato) {
       const userCookie = Cookies.get("info");
       if (!userCookie) {
-        console.error("User  cookie not found");
+        console.error("User cookie not found");
         return;
       }
 
       const user = JSON.parse(userCookie);
 
-      // Criar um array de novos agendamentos
       const novosAgendamentos = selectedTimes.map((time) => ({
         userId: user.codUser,
         data: selectedDate.toISOString(),
-        horarios: [time], // Salve o horário individualmente
+        horarios: [time],
         nome,
         contato,
         isWhatsapp,
@@ -178,17 +177,14 @@ export default function Agendamentos() {
       }));
 
       try {
-        // Envie cada agendamento individualmente
         const agendamentosCriados = await Promise.all(
           novosAgendamentos.map((agendamento: any) =>
             agendamentoService.criarAgendamento(agendamento)
           )
         );
 
-        // Atualize o estado com todos os novos agendamentos
         setAgendamentos((prev: any) => [...prev, ...agendamentosCriados]);
 
-        // Feche o modal e limpe os campos
         setIsFormModalOpen(false);
         setSelectedTimes([]);
         setNome("");
@@ -220,18 +216,17 @@ export default function Agendamentos() {
     ) {
       const userCookie = Cookies.get("info");
       if (!userCookie) {
-        console.error("User  cookie not found");
+        console.error("User cookie not found");
         return;
       }
 
       const user = JSON.parse(userCookie);
 
-      // Atualizar o agendamento para cada horário selecionado
       const updatedAgendamentos = selectedTimes.map((time) => ({
-        id: selectedAgendamento.id, // ID do agendamento a ser atualizado
+        id: selectedAgendamento.id,
         userId: user.codUser,
         data: selectedDate.toISOString(),
-        horarios: [time], // O novo horário
+        horarios: [time],
         nome,
         contato,
         isWhatsapp,
@@ -245,7 +240,6 @@ export default function Agendamentos() {
           )
         );
 
-        // Atualiza o estado local para refletir a edição
         setAgendamentos((prev) =>
           prev.map((a) =>
             a.id === selectedAgendamento.id
@@ -254,7 +248,6 @@ export default function Agendamentos() {
           )
         );
 
-        // Feche o modal e limpe os campos
         setIsFormModalOpen(false);
         setSelectedTimes([]);
         setNome("");
@@ -278,16 +271,16 @@ export default function Agendamentos() {
 
   const handleFormSubmit = useCallback(() => {
     if (selectedAgendamento) {
-      handleEditAgendamento(); // Se um agendamento estiver selecionado, edita
+      handleEditAgendamento();
     } else {
-      handleCreateAgendamento(); // Caso contrário, cria um novo
+      handleCreateAgendamento();
     }
   }, [selectedAgendamento, handleEditAgendamento, handleCreateAgendamento]);
 
-  const handleAgendamentoClick = useCallback((agendamento: Agendamento) => {
-    setSelectedAgendamento(agendamento);
-    setIsFormModalOpen(true); // Abra o modal de edição aqui
-  }, []);
+  // const handleAgendamentoClick = useCallback((agendamento: Agendamento) => {
+  //   setSelectedAgendamento(agendamento);
+  //   setIsDetailsModalOpen(true);
+  // }, []);
 
   const handleDeleteHorario = useCallback(
     async (id: string, horario: string) => {
@@ -325,29 +318,34 @@ export default function Agendamentos() {
       setIsWhatsapp(selectedAgendamento.isWhatsapp);
       setTipoServico(selectedAgendamento.tipoServico);
       setSelectedTimes(selectedAgendamento.horarios);
-      setSelectedDate(new Date(selectedAgendamento.data)); // Defina a data
+      setSelectedDate(new Date(selectedAgendamento.data));
     }
   }, [selectedAgendamento]);
 
   return (
     <div className={`container mx-auto p-4 ${isMobile ? "ml-8" : ""}`}>
       <div className="flex flex-col lg:flex-row gap-3 items-start relative z-10">
+        {/* Calendário */}
         <Card
           className={`${
             isMobile ? "w-[36vh]" : "w-full max-w-[400px]"
           } flex-shrink-0`}
         >
-          <CardHeader>
-            <CardTitle>Calendário</CardTitle>
+          <CardHeader className="py-2">
+            <CardTitle className="text-lg">Calendário</CardTitle>
           </CardHeader>
-          <CardContent className="p-4 sm:p-8">
+          <CardContent className="p-4 sm:p-7 ">
+            {/* Ajuste do tamanho do calendário para dispositivos móveis */}
             <Calendar
               mode="single"
               selected={selectedDate}
               onSelect={handleDateSelect}
               className={`rounded-md border shadow-sm max-w-full ${
-                isMobile ? "pl-6" : "pl-11"
+                isMobile ? "pl-2 text-xs" : "pl-11 "
               }`}
+              disabled={(date) =>
+                date < new Date(new Date().setHours(0, 0, 0, 0))
+              }
               classNames={{
                 day_selected:
                   "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
@@ -363,10 +361,16 @@ export default function Agendamentos() {
                 table: "w-full border-collapse space-y-1",
                 head_row: "flex",
                 head_cell:
-                  "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
-                row: "flex w-full mt-2",
-                cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100",
+                  "text-muted-foreground rounded-md w-8 font-normal text-[0.7rem]",
+                row: "flex w-full mt-1",
+                cell: `text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent 
+                       first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md 
+                       focus-within:relative focus-within:z-20 ${
+                         isMobile ? "w-8 h-8" : "w-9 h-9"
+                       }`,
+                day: `${
+                  isMobile ? "h-8 w-8 p-0 text-[0.7rem]" : "h-9 w-9 p-0"
+                } font-normal aria-selected:opacity-100`,
               }}
             />
             <Button
@@ -377,10 +381,11 @@ export default function Agendamentos() {
             </Button>
           </CardContent>
         </Card>
+        {/* Tabela de Agendamentos */}
         <Card
           className={`flex-grow ${
             isMobile ? "w-[36vh]" : "w-full max-w-[1000px]"
-          } overflow-hidden h-[calc(49vh-2rem)] lg:h-[calc(100vh-2rem)]`}
+          } overflow-hidden h-[calc(45vh-2rem)] lg:h-[calc(100vh-2rem)]`}
         >
           <CardHeader>
             <CardTitle>Agendamentos do Dia</CardTitle>
@@ -393,8 +398,8 @@ export default function Agendamentos() {
                   <TableHead>Nome</TableHead>
                   {!isMobile && <TableHead>Contato</TableHead>}
                   {!isMobile && <TableHead>Serviço</TableHead>}
-                  {!isMobile && <TableHead>WhatsApp</TableHead>}
-                  <TableHead>Ações</TableHead>
+                  <TableHead>WhatsApp</TableHead>
+                  {!isMobile && <TableHead>Ações</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -417,7 +422,10 @@ export default function Agendamentos() {
                     <TableRow
                       key={index}
                       className="cursor-pointer"
-                      onClick={() => handleAgendamentoClick(agendamento)}
+                      onClick={() => {
+                        setSelectedAgendamento(agendamento);
+                        setIsDetailsModalOpen(true);
+                      }}
                     >
                       <TableCell className="font-medium">
                         {agendamento.horario}
@@ -429,55 +437,58 @@ export default function Agendamentos() {
                       {!isMobile && (
                         <TableCell>{agendamento.tipoServico}</TableCell>
                       )}
+                      <TableCell>
+                        {agendamento.isWhatsapp && (
+                          <a
+                            href={`https://wa.me/${agendamento.contato.replace(
+                              /\D/g,
+                              ""
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
+                            className={`${
+                              isMobile ? "flex justify-center" : ""
+                            }`}
+                          >
+                            <WhatsappIcon className="h-5 w-5 text-green-500" />
+                          </a>
+                        )}
+                      </TableCell>
                       {!isMobile && (
                         <TableCell>
-                          {agendamento.isWhatsapp && (
-                            <a
-                              href={`https://wa.me/${agendamento.contato.replace(
-                                /\D/g,
-                                ""
-                              )}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                          <div className="flex space-x-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
                               onClick={(e) => {
                                 e.stopPropagation();
+                                setSelectedAgendamento(agendamento);
+                                setIsFormModalOpen(true);
                               }}
                             >
-                              <WhatsappIcon className="h-5 w-5 text-green-500" />
-                            </a>
-                          )}
+                              <Edit className="h-4 w-4" />
+                              <span className="sr-only">Editar</span>
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteHorario(
+                                  agendamento.id,
+                                  agendamento.horario
+                                );
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4 text-red-500" />
+                              <span className="sr-only">Deletar</span>
+                            </Button>
+                          </div>
                         </TableCell>
                       )}
-                      <TableCell>
-                        <div className="flex space-x-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={(e) => {
-                              e.stopPropagation(); // Impede que o clique na linha da tabela seja registrado
-                              setSelectedAgendamento(agendamento); // Define o agendamento selecionado
-                              setIsFormModalOpen(true); // Abre o modal de edição
-                            }}
-                          >
-                            <Edit className="h-4 w-4" />
-                            <span className="sr-only">Editar</span>
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={(e) => {
-                              e.stopPropagation(); // Impede que o clique na linha da tabela seja registrado
-                              handleDeleteHorario(
-                                agendamento.id,
-                                agendamento.horario
-                              ); // Chama a função para deletar apenas o horário
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4 text-red-500" />
-                            <span className="sr-only">Deletar</span>
-                          </Button>
-                        </div>
-                      </TableCell>
                     </TableRow>
                   ))}
               </TableBody>
@@ -486,6 +497,7 @@ export default function Agendamentos() {
         </Card>
       </div>
 
+      {/* Modais */}
       <Dialog open={isTimeModalOpen} onOpenChange={setIsTimeModalOpen}>
         <DialogContent>
           <DialogHeader>
@@ -550,7 +562,9 @@ export default function Agendamentos() {
               <Checkbox
                 id="isWhatsapp"
                 checked={isWhatsapp}
-                onCheckedChange={(checked: any) => setIsWhatsapp(checked as boolean)}
+                onCheckedChange={(checked: any) =>
+                  setIsWhatsapp(checked as boolean)
+                }
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -621,7 +635,10 @@ export default function Agendamentos() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => handleEditAgendamento()}
+              onClick={() => {
+                setIsDetailsModalOpen(false);
+                setIsFormModalOpen(true);
+              }}
             >
               <Edit className="h-4 w-4" />
               <span className="sr-only">Editar</span>
@@ -631,10 +648,13 @@ export default function Agendamentos() {
               size="icon"
               onClick={(e) => {
                 e.stopPropagation();
-                handleDeleteHorario(
-                  selectedAgendamento!.id,
-                  selectedAgendamento!.data
-                );
+                if (selectedAgendamento) {
+                  handleDeleteHorario(
+                    selectedAgendamento.id,
+                    selectedAgendamento.horarios[0]
+                  );
+                }
+                setIsDetailsModalOpen(false);
               }}
             >
               <Trash2 className="h-4 w-4 text-red-500" />
