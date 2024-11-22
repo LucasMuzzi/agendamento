@@ -136,7 +136,7 @@ export default function DashboardHome() {
       <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
       <Card
         className={`flex-grow ${
-          isMobile ? "w-[36vh]" : "w-full max-w-[1000px]"
+          isMobile ? "w-[44vh]" : "w-full max-w-[1000px]"
         } overflow-hidden h-[88vh] lg:h-[calc(100vh-2rem)]`}
       >
         <CardHeader>

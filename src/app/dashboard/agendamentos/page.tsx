@@ -38,6 +38,7 @@ import {
   AgendamentoService,
 } from "@/app/api/services/appointmentServices";
 import Cookies from "js-cookie";
+import { ptBR } from "date-fns/locale";
 
 type Agendamento = {
   id: any;
@@ -152,7 +153,10 @@ export default function Agendamentos() {
   const handleTimesConfirm = useCallback(() => {
     if (selectedTimes.length > 0) {
       setIsTimeModalOpen(false);
-      setIsFormModalOpen(true);
+
+      setTimeout(() => {
+        setIsFormModalOpen(true);
+      }, 100);
     }
   }, [selectedTimes]);
 
@@ -328,20 +332,20 @@ export default function Agendamentos() {
         {/* Calendário */}
         <Card
           className={`${
-            isMobile ? "w-[36vh]" : "w-full max-w-[400px]"
+            isMobile ? "w-[44vh]" : "w-full max-w-[400px]"
           } flex-shrink-0`}
         >
           <CardHeader className="py-2">
             <CardTitle className="text-lg">Calendário</CardTitle>
           </CardHeader>
-          <CardContent className="p-4 sm:p-7 ">
-            {/* Ajuste do tamanho do calendário para dispositivos móveis */}
+          <CardContent className="p-4 sm:p-7">
             <Calendar
+              locale={ptBR}
               mode="single"
               selected={selectedDate}
               onSelect={handleDateSelect}
               className={`rounded-md border shadow-sm max-w-full ${
-                isMobile ? "pl-2 text-xs" : "pl-11 "
+                isMobile ? "text-xs" : ""
               }`}
               disabled={(date) =>
                 date < new Date(new Date().setHours(0, 0, 0, 0))
@@ -361,16 +365,10 @@ export default function Agendamentos() {
                 table: "w-full border-collapse space-y-1",
                 head_row: "flex",
                 head_cell:
-                  "text-muted-foreground rounded-md w-8 font-normal text-[0.7rem]",
-                row: "flex w-full mt-1",
-                cell: `text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent 
-                       first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md 
-                       focus-within:relative focus-within:z-20 ${
-                         isMobile ? "w-8 h-8" : "w-9 h-9"
-                       }`,
-                day: `${
-                  isMobile ? "h-8 w-8 p-0 text-[0.7rem]" : "h-9 w-9 p-0"
-                } font-normal aria-selected:opacity-100`,
+                  "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+                row: "flex w-full mt-2",
+                cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100",
               }}
             />
             <Button
@@ -384,7 +382,7 @@ export default function Agendamentos() {
         {/* Tabela de Agendamentos */}
         <Card
           className={`flex-grow ${
-            isMobile ? "w-[36vh]" : "w-full max-w-[1000px]"
+            isMobile ? "w-[44vh]" : "w-full max-w-[1000px]"
           } overflow-hidden h-[calc(45vh-2rem)] lg:h-[calc(100vh-2rem)]`}
         >
           <CardHeader>
