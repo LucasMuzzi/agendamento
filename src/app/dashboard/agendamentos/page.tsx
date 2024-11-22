@@ -550,7 +550,7 @@ export default function Agendamentos() {
               <Checkbox
                 id="isWhatsapp"
                 checked={isWhatsapp}
-                onCheckedChange={(checked) => setIsWhatsapp(checked as boolean)}
+                onCheckedChange={(checked: any) => setIsWhatsapp(checked as boolean)}
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
