@@ -132,12 +132,11 @@ export default function DashboardHome() {
   }, []);
 
   return (
-    <div className={`container mx-auto p-4 ${isMobile ? "ml-8" : ""}`}>
-      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+    <div className={`container mx-auto p-4 ${isMobile ? "mt-12" : ""}`}>
       <Card
         className={`flex-grow ${
-          isMobile ? "w-[44vh]" : "w-full max-w-[1000px]"
-        } overflow-hidden h-[88vh] lg:h-[calc(100vh-2rem)]`}
+          isMobile ? "w-[43vh]" : "w-full max-w-[1000px]"
+        } overflow-hidden h-[91vh] lg:h-[calc(100vh-2rem)]`}
       >
         <CardHeader>
           <CardTitle>Agendamentos de Hoje</CardTitle>

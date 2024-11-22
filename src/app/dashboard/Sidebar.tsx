@@ -37,13 +37,39 @@ export default function Sidebar({ isOpen, onToggle, isMobile }: SidebarProps) {
     }
   };
 
+  const handleMenuClick = () => {
+    if (isMobile) onToggle();
+  };
+
   return (
     <>
+      {/* Div fixa no topo para o botão de menu */}
+      {isMobile && (
+        <div
+          className="fixed top-0 left-0 w-full bg-white shadow-md z-50 h-12 flex items-center px-4"
+          style={{ zIndex: 100 }}
+        >
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onToggle}
+            className="p-2 rounded-full"
+          >
+            <Menu className="h-6 w-6" />
+          </Button>
+        </div>
+      )}
+
+      {/* Menu lateral */}
       <aside
         className={`${
-          isMobile ? "fixed top-0 left-0 h-full z-40" : "relative h-screen"
-        } bg-white shadow-md transition-all duration-300 ease-in-out flex flex-col
-        ${isOpen ? "w-64" : "w-16"}`}
+          isMobile
+            ? `fixed top-0 left-0 h-full z-40 bg-white shadow-md transition-transform duration-300 ${
+                isOpen ? "translate-x-0" : "-translate-x-full"
+              }`
+            : "relative h-screen bg-white shadow-md"
+        } flex flex-col ${isOpen ? "w-64" : "w-16"}`}
+        style={isMobile ? { zIndex: 99, marginTop: "3rem" } : {}}
       >
         <div className="p-4 flex items-center justify-between">
           <div
@@ -72,6 +98,7 @@ export default function Sidebar({ isOpen, onToggle, isMobile }: SidebarProps) {
             icon={<Menu className="w-5 h-5" />}
             isActive={pathname === "/dashboard/agendamentos"}
             isExpanded={isOpen}
+            onClick={handleMenuClick}
           >
             Agendamentos
           </SidebarLink>
@@ -80,6 +107,7 @@ export default function Sidebar({ isOpen, onToggle, isMobile }: SidebarProps) {
             icon={<Users className="w-5 h-5" />}
             isActive={pathname === "/dashboard/clientes"}
             isExpanded={isOpen}
+            onClick={handleMenuClick}
           >
             Cadastro de Clientes
           </SidebarLink>
@@ -88,13 +116,17 @@ export default function Sidebar({ isOpen, onToggle, isMobile }: SidebarProps) {
             icon={<Settings className="w-5 h-5" />}
             isActive={pathname === "/dashboard/configuracao"}
             isExpanded={isOpen}
+            onClick={handleMenuClick}
           >
             Configurações
           </SidebarLink>
         </nav>
         <div className="mt-auto p-4">
           <button
-            onClick={handleLogout}
+            onClick={() => {
+              handleLogout();
+              handleMenuClick();
+            }}
             className={`flex items-center space-x-2 text-red-600 hover:text-red-800 transition-colors w-full
                 ${isOpen ? "justify-start" : "justify-center"}`}
           >
@@ -103,6 +135,9 @@ export default function Sidebar({ isOpen, onToggle, isMobile }: SidebarProps) {
           </button>
         </div>
       </aside>
+
+      {/* Espaço para o conteúdo principal */}
+
       {isMobile && isOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-30"
@@ -119,12 +154,14 @@ function SidebarLink({
   children,
   isActive,
   isExpanded,
+  onClick,
 }: {
   href: string;
   icon: React.ReactNode;
   children: React.ReactNode;
   isActive: boolean;
   isExpanded: boolean;
+  onClick: () => void;
 }) {
   return (
     <Link
@@ -136,6 +173,7 @@ function SidebarLink({
             : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
         }
         ${isExpanded ? "justify-start" : "justify-center"}`}
+      onClick={onClick}
     >
       {icon}
       {isExpanded && <span>{children}</span>}

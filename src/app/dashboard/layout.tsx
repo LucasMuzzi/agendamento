@@ -35,7 +35,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             isMobile && isSidebarOpen ? "opacity-50" : ""
           }`}
         >
-          <div className={`${isMobile ? "pl-7 overflow-hidden" : ""}`}>{children}</div>
+          <div className={`${isMobile ? "overflow-hidden" : ""}`}>
+            {children}
+          </div>
         </main>
       </div>
     </div>

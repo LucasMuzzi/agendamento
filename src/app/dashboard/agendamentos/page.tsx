@@ -327,26 +327,24 @@ export default function Agendamentos() {
   }, [selectedAgendamento]);
 
   return (
-    <div className={`container mx-auto p-4 ${isMobile ? "ml-8" : ""}`}>
-      <div className="flex flex-col lg:flex-row gap-3 items-start relative z-10">
+    <div className={`container mx-auto p-4 ${isMobile ? "mt-12" : ""}`}>
+      <div className="flex flex-col lg:flex-row gap-2 items-start relative z-10">
         {/* Calendário */}
         <Card
           className={`${
-            isMobile ? "w-[44vh]" : "w-full max-w-[400px]"
+            isMobile ? "w-[43vh]" : "w-full max-w-[400px]"
           } flex-shrink-0`}
         >
           <CardHeader className="py-2">
             <CardTitle className="text-lg">Calendário</CardTitle>
           </CardHeader>
-          <CardContent className="p-4 sm:p-7">
+          <CardContent className="p-4">
             <Calendar
               locale={ptBR}
               mode="single"
               selected={selectedDate}
               onSelect={handleDateSelect}
-              className={`rounded-md border shadow-sm max-w-full ${
-                isMobile ? "text-xs" : ""
-              }`}
+              className={` rounded-md border shadow-sm  ${isMobile ? "" : ""}`}
               disabled={(date) =>
                 date < new Date(new Date().setHours(0, 0, 0, 0))
               }
@@ -362,11 +360,11 @@ export default function Agendamentos() {
                 nav_button: "hover:bg-accent hover:text-accent-foreground",
                 nav_button_previous: "absolute left-1",
                 nav_button_next: "absolute right-1",
-                table: "w-full border-collapse space-y-1",
-                head_row: "flex",
+                table: " w-full border-collapse space-y-1",
+                head_row: "flex w-full mt-2 pl-10 ",
                 head_cell:
                   "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
-                row: "flex w-full mt-2",
+                row: "flex w-full mt-2 pl-10", // Aumente o valor de pl-4 conforme necessário
                 cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
                 day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100",
               }}
@@ -382,8 +380,8 @@ export default function Agendamentos() {
         {/* Tabela de Agendamentos */}
         <Card
           className={`flex-grow ${
-            isMobile ? "w-[44vh]" : "w-full max-w-[1000px]"
-          } overflow-hidden h-[calc(45vh-2rem)] lg:h-[calc(100vh-2rem)]`}
+            isMobile ? "w-[43vh]" : "w-full max-w-[1000px]"
+          } overflow-hidden h-[calc(44vh-2rem)] lg:h-[calc(100vh-2rem)]`}
         >
           <CardHeader>
             <CardTitle>Agendamentos do Dia</CardTitle>

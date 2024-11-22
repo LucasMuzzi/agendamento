@@ -75,7 +75,7 @@ export default function Clientes() {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className={`container mx-auto p-4 ${isMobile ? "mt-12" : ""}`}>
       <Card
         className={`${isMobile ? "w-full" : "w-full max-w-[800px]"} mx-auto`}
       >
