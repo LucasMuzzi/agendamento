@@ -281,11 +281,6 @@ export default function Agendamentos() {
     }
   }, [selectedAgendamento, handleEditAgendamento, handleCreateAgendamento]);
 
-  // const handleAgendamentoClick = useCallback((agendamento: Agendamento) => {
-  //   setSelectedAgendamento(agendamento);
-  //   setIsDetailsModalOpen(true);
-  // }, []);
-
   const handleDeleteHorario = useCallback(
     async (id: string, horario: string) => {
       try {
@@ -363,9 +358,9 @@ export default function Agendamentos() {
                 table: " w-full border-collapse space-y-1",
                 head_row: "flex w-full mt-2 pl-10 ",
                 head_cell:
-                  "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+                  "text-muted-foreground rounded-md w-9 font-normal text-md",
                 row: "flex w-full mt-2 pl-10", // Aumente o valor de pl-4 conforme necessário
-                cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                cell: "text-center text-md p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
                 day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100",
               }}
             />
@@ -446,7 +441,7 @@ export default function Agendamentos() {
                               e.stopPropagation();
                             }}
                             className={`${
-                              isMobile ? "flex justify-center" : ""
+                              isMobile ? "flex pl-7" : ""
                             }`}
                           >
                             <WhatsappIcon className="h-5 w-5 text-green-500" />
