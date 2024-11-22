@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
@@ -73,14 +74,14 @@ export default function DashboardHome() {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        const todayAgendamentos: Agendamento[] = agendamentosData
+        const todayAgendamentos: any[] = agendamentosData
           .filter((agendamento) => {
             const agendamentoDate = new Date(agendamento.data);
             agendamentoDate.setHours(0, 0, 0, 0);
             return agendamentoDate.getTime() === today.getTime();
           })
           .map((agendamento) => ({
-            id: agendamento.id,
+            id: agendamento._id,
             data: new Date(agendamento.data),
             horarios: agendamento.horarios,
             nome: agendamento.nome,
