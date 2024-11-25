@@ -135,8 +135,8 @@ export default function DashboardHome() {
     <div className={`container mx-auto p-4 ${isMobile ? "mt-12" : ""}`}>
       <Card
         className={`flex-grow ${
-          isMobile ? "w-[52vh]" : "w-full max-w-[1000px]"
-        } overflow-hidden h-[91vh] lg:h-[calc(100vh-2rem)]`}
+          isMobile ? "w-[50vh]" : "w-full max-w-[1000px]"
+        } overflow-hidden h-[89vh] lg:h-[calc(100vh-2rem)]`}
       >
         <CardHeader>
           <CardTitle>Agendamentos de Hoje</CardTitle>
@@ -188,7 +188,7 @@ export default function DashboardHome() {
                           onClick={(e) => {
                             e.stopPropagation();
                           }}
-                          className={`${isMobile ? "flex justify-center" : ""}`}
+                          className={`${isMobile ? "flex pl-6" : ""}`}
                         >
                           <WhatsappIcon className="h-5 w-5 text-green-500" />
                         </a>

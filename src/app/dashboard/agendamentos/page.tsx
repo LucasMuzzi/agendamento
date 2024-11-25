@@ -39,6 +39,7 @@ import {
 } from "@/app/api/services/appointmentServices";
 import Cookies from "js-cookie";
 import { ptBR } from "date-fns/locale";
+import { LoadingScreen } from "@/components/loading";
 
 type Agendamento = {
   id: any;
@@ -69,6 +70,7 @@ export default function Agendamentos() {
     useState<Agendamento | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [bookedTimeSlots, setBookedTimeSlots] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const agendamentoService = new AgendamentoService();
 
@@ -152,8 +154,6 @@ export default function Agendamentos() {
 
   const handleTimesConfirm = useCallback(() => {
     if (selectedTimes.length > 0) {
-      setIsTimeModalOpen(false);
-
       setTimeout(() => {
         setIsFormModalOpen(true);
       }, 100);
@@ -164,7 +164,7 @@ export default function Agendamentos() {
     if (selectedDate && selectedTimes.length > 0 && nome && contato) {
       const userCookie = Cookies.get("info");
       if (!userCookie) {
-        console.error("User cookie not found");
+        console.error("User  cookie not found");
         return;
       }
 
@@ -189,15 +189,25 @@ export default function Agendamentos() {
 
         setAgendamentos((prev: any) => [...prev, ...agendamentosCriados]);
 
+        // Feche ambos os modais
         setIsFormModalOpen(false);
+        setIsTimeModalOpen(false);
+
+        // Limpe os campos
         setSelectedTimes([]);
         setNome("");
         setContato("");
         setIsWhatsapp(false);
         setTipoServico(tiposServico[0]);
-        window.location.reload();
+
+        // Recarregue a página
+        setTimeout(() => {
+          window.location.reload();
+        }, 500); // Adjust the delay as needed
       } catch (error) {
         console.error("Erro ao gravar agendamento:", error);
+      } finally {
+        setIsLoading(false); // Stop loading
       }
     }
   }, [
@@ -323,11 +333,12 @@ export default function Agendamentos() {
 
   return (
     <div className={`container mx-auto p-4 ${isMobile ? "mt-12" : ""}`}>
+      {isLoading && <LoadingScreen />}
       <div className="flex flex-col lg:flex-row gap-2 items-start relative z-10">
         {/* Calendário */}
         <Card
           className={`${
-            isMobile ? "w-[52vh]" : "w-full max-w-[400px]"
+            isMobile ? "w-[50vh]" : "w-full max-w-[400px]"
           } flex-shrink-0`}
         >
           <CardHeader className="py-2">
@@ -339,7 +350,9 @@ export default function Agendamentos() {
               mode="single"
               selected={selectedDate}
               onSelect={handleDateSelect}
-              className={` rounded-md border shadow-sm  ${isMobile ? "" : "pl-8"}`}
+              className={` rounded-md border shadow-sm  ${
+                isMobile ? "" : "pl-8"
+              }`}
               disabled={(date) =>
                 date < new Date(new Date().setHours(0, 0, 0, 0))
               }
@@ -375,7 +388,7 @@ export default function Agendamentos() {
         {/* Tabela de Agendamentos */}
         <Card
           className={`flex-grow ${
-            isMobile ? "w-[52vh]" : "w-full max-w-[1000px]"
+            isMobile ? "w-[50vh]" : "w-full max-w-[1000px]"
           } overflow-hidden h-[calc(44vh-2rem)] lg:h-[calc(100vh-2rem)]`}
         >
           <CardHeader>
