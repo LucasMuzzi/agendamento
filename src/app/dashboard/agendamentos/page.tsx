@@ -562,7 +562,7 @@ export default function Agendamentos() {
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="isWhatsapp" className="text-right">
-                É WhatsApp?
+                WhatsApp?
               </Label>
               <Checkbox
                 id="isWhatsapp"
@@ -591,7 +591,13 @@ export default function Agendamentos() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsFormModalOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsFormModalOpen(false);
+                setIsTimeModalOpen(false);
+              }}
+            >
               Cancelar
             </Button>
             <Button onClick={handleFormSubmit}>Gravar</Button>
@@ -627,7 +633,7 @@ export default function Agendamentos() {
                 <p>{selectedAgendamento.contato}</p>
               </div>
               <div>
-                <Label>É WhatsApp?</Label>
+                <Label>WhatsApp?</Label>
                 <p>{selectedAgendamento.isWhatsapp ? "Sim" : "Não"}</p>
               </div>
               <div>

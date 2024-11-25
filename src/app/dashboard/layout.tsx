@@ -24,17 +24,17 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
-  // Função para simular o carregamento (remova isso e use um método real de carregamento)
   const handleMenuClick = () => {
-    setIsLoading(true); // Ativa o estado de carregamento
+    setIsLoading(true);
     setTimeout(() => {
-      setIsLoading(false); // Desativa o estado de carregamento após 2 segundos (simulação)
-    }, 1000); // Ajuste conforme necessário
+      setIsLoading(false);
+    }, 1000);
   };
 
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden ">
-      {isLoading && <LoadingScreen />} {/* Mostra o loading se isLoading for true */}
+      {isLoading && <LoadingScreen />}{" "}
+      {/* Mostra o loading se isLoading for true */}
       <Sidebar
         isOpen={isSidebarOpen}
         onToggle={toggleSidebar}

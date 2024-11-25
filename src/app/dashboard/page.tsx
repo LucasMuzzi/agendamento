@@ -256,7 +256,7 @@ export default function DashboardHome() {
                 <p>{selectedAgendamento.contato}</p>
               </div>
               <div>
-                <Label>É WhatsApp?</Label>
+                <Label>WhatsApp?</Label>
                 <p>{selectedAgendamento.isWhatsapp ? "Sim" : "Não"}</p>
               </div>
               <div>
