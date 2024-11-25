@@ -29,7 +29,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     setIsLoading(true); // Ativa o estado de carregamento
     setTimeout(() => {
       setIsLoading(false); // Desativa o estado de carregamento após 2 segundos (simulação)
-    }, 2000); // Ajuste conforme necessário
+    }, 1000); // Ajuste conforme necessário
   };
 
   return (

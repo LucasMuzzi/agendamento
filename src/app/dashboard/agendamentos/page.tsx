@@ -333,12 +333,15 @@ export default function Agendamentos() {
 
   return (
     <div className={`container mx-auto p-4 ${isMobile ? "mt-12" : ""}`}>
-      {isLoading && <LoadingScreen />}
+      {isLoading &&
+        !isTimeModalOpen &&
+        !isFormModalOpen &&
+        !isDetailsModalOpen && <LoadingScreen />}
       <div className="flex flex-col lg:flex-row gap-2 items-start relative z-10">
         {/* Calendário */}
         <Card
           className={`${
-            isMobile ? "w-[50vh]" : "w-full max-w-[400px]"
+            isMobile ? "w-[51vh]" : "w-full max-w-[400px]"
           } flex-shrink-0`}
         >
           <CardHeader className="py-2">
@@ -388,7 +391,7 @@ export default function Agendamentos() {
         {/* Tabela de Agendamentos */}
         <Card
           className={`flex-grow ${
-            isMobile ? "w-[50vh]" : "w-full max-w-[1000px]"
+            isMobile ? "w-[51vh]" : "w-full max-w-[1000px]"
           } overflow-hidden h-[calc(44vh-2rem)] lg:h-[calc(100vh-2rem)]`}
         >
           <CardHeader>
@@ -527,7 +530,7 @@ export default function Agendamentos() {
       </Dialog>
 
       <Dialog open={isFormModalOpen} onOpenChange={setIsFormModalOpen}>
-        <DialogContent>
+        <DialogContent className="z-50">
           <DialogHeader>
             <DialogTitle>
               Agendar: {selectedDate?.toLocaleDateString()} -{" "}

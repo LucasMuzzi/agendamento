@@ -135,7 +135,7 @@ export default function DashboardHome() {
     <div className={`container mx-auto p-4 ${isMobile ? "mt-12" : ""}`}>
       <Card
         className={`flex-grow ${
-          isMobile ? "w-[50vh]" : "w-full max-w-[1000px]"
+          isMobile ? "w-[51vh]" : "w-full max-w-[1000px]"
         } overflow-hidden h-[89vh] lg:h-[calc(100vh-2rem)]`}
       >
         <CardHeader>
