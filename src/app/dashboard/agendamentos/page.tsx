@@ -327,7 +327,7 @@ export default function Agendamentos() {
         {/* Calendário */}
         <Card
           className={`${
-            isMobile ? "w-[43vh]" : "w-full max-w-[400px]"
+            isMobile ? "w-[52vh]" : "w-full max-w-[400px]"
           } flex-shrink-0`}
         >
           <CardHeader className="py-2">
@@ -339,7 +339,7 @@ export default function Agendamentos() {
               mode="single"
               selected={selectedDate}
               onSelect={handleDateSelect}
-              className={` rounded-md border shadow-sm  ${isMobile ? "" : ""}`}
+              className={` rounded-md border shadow-sm  ${isMobile ? "" : "pl-8"}`}
               disabled={(date) =>
                 date < new Date(new Date().setHours(0, 0, 0, 0))
               }
@@ -359,8 +359,8 @@ export default function Agendamentos() {
                 head_row: "flex w-full mt-2 pl-8 ",
                 head_cell:
                   "text-muted-foreground rounded-md w-9 font-normal text-md",
-                row: "flex w-full mt-2 pl-8", // Aumente o valor de pl-4 conforme necessário
-                cell: "text-center text-md p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                row: "flex w-full mt-2 pl-8",
+                cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
                 day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100",
               }}
             />
@@ -375,7 +375,7 @@ export default function Agendamentos() {
         {/* Tabela de Agendamentos */}
         <Card
           className={`flex-grow ${
-            isMobile ? "w-[43vh]" : "w-full max-w-[1000px]"
+            isMobile ? "w-[52vh]" : "w-full max-w-[1000px]"
           } overflow-hidden h-[calc(44vh-2rem)] lg:h-[calc(100vh-2rem)]`}
         >
           <CardHeader>

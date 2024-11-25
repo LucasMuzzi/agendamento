@@ -10,6 +10,7 @@ import {
   Menu,
   ChevronLeft,
   ChevronRight,
+  Home,
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -45,7 +46,7 @@ export default function Sidebar({
 
   const handleMenuClick = () => {
     if (isMobile) onToggle();
-    onMenuClick(); 
+    onMenuClick();
   };
 
   return (
@@ -100,6 +101,18 @@ export default function Sidebar({
           </Button>
         </div>
         <nav className="flex-1 space-y-2 p-2">
+          <SidebarLink
+            href="/"
+            icon={<Home className="w-5 h-5" />}
+            isActive={pathname === "/"}
+            isExpanded={isOpen}
+            onClick={() => {
+              handleMenuClick(); // Chama a função de clique do menu
+              // Aqui você pode adicionar lógica adicional, se necessário
+            }}
+          >
+            Pagina inicial
+          </SidebarLink>
           <SidebarLink
             href="/dashboard/agendamentos"
             icon={<Menu className="w-5 h-5" />}
