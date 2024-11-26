@@ -7,7 +7,7 @@ import {
   AgendamentoService,
   AgendamentoResponse,
 } from "@/app/api/services/appointmentServices";
-import { Button } from "@/components/ui/button";
+
 import {
   Table,
   TableBody,
@@ -17,14 +17,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { PhoneIcon as WhatsappIcon, Edit, Trash2 } from "lucide-react";
+import { PhoneIcon as WhatsappIcon } from "lucide-react";
 import Cookies from "js-cookie";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import "./home.css";
@@ -58,8 +57,6 @@ export default function DashboardHome() {
 
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  
 
   useEffect(() => {
     const fetchTodayAppointments = async () => {
@@ -102,33 +99,6 @@ export default function DashboardHome() {
     fetchTodayAppointments();
   }, []);
 
-  const handleEditAgendamento = useCallback((agendamento: Agendamento) => {
-    // Implement edit functionality
-    console.log("Edit agendamento:", agendamento);
-  }, []);
-
-  const handleDeleteAgendamento = useCallback(
-    async (id: string, horario: string) => {
-      try {
-        await agendamentoService.deletarHorario(id, horario);
-        setTodayAppointments((prev) =>
-          prev.map((agendamento) => {
-            if (agendamento.id === id) {
-              return {
-                ...agendamento,
-                horarios: agendamento.horarios.filter((h) => h !== horario),
-              };
-            }
-            return agendamento;
-          })
-        );
-      } catch (error) {
-        console.error("Erro ao deletar horário:", error);
-      }
-    },
-    [agendamentoService]
-  );
-
   const handleAgendamentoClick = useCallback((agendamento: Agendamento) => {
     setSelectedAgendamento(agendamento);
     setIsDetailsModalOpen(true);
@@ -151,7 +121,6 @@ export default function DashboardHome() {
                 {!isMobile && <TableHead>Contato</TableHead>}
                 {!isMobile && <TableHead>Serviço</TableHead>}
                 <TableHead>WhatsApp</TableHead>
-                {!isMobile && <TableHead>Ações</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -195,37 +164,6 @@ export default function DashboardHome() {
                         </a>
                       )}
                     </TableCell>
-                    {!isMobile && (
-                      <TableCell>
-                        <div className="flex space-x-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleEditAgendamento(agendamento);
-                            }}
-                          >
-                            <Edit className="h-4 w-4" />
-                            <span className="sr-only">Editar</span>
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteAgendamento(
-                                agendamento.id,
-                                agendamento.horario
-                              );
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4 text-red-500" />
-                            <span className="sr-only">Deletar</span>
-                          </Button>
-                        </div>
-                      </TableCell>
-                    )}
                   </TableRow>
                 ))}
             </TableBody>
@@ -266,37 +204,6 @@ export default function DashboardHome() {
               </div>
             </div>
           )}
-          <DialogFooter>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                setIsDetailsModalOpen(false);
-                if (selectedAgendamento) {
-                  handleEditAgendamento(selectedAgendamento);
-                }
-              }}
-            >
-              <Edit className="h-4 w-4" />
-              <span className="sr-only">Editar</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                if (selectedAgendamento) {
-                  handleDeleteAgendamento(
-                    selectedAgendamento.id,
-                    selectedAgendamento.horarios[0]
-                  );
-                }
-                setIsDetailsModalOpen(false);
-              }}
-            >
-              <Trash2 className="h-4 w-4 text-red-500" />
-              <span className="sr-only">Deletar</span>
-            </Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

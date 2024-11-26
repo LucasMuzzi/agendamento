@@ -382,7 +382,7 @@ export default function Agendamentos() {
                 head_cell:
                   "text-muted-foreground rounded-md w-9 font-normal text-md",
                 row: "flex w-full mt-2 pl-8",
-                cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                cell: "table-cell text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
                 day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100",
               }}
             />
