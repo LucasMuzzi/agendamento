@@ -40,6 +40,7 @@ import {
 import Cookies from "js-cookie";
 import { ptBR } from "date-fns/locale";
 import { LoadingScreen } from "@/components/loading";
+import "./agendamentos.css";
 
 type Agendamento = {
   id: any;
@@ -333,18 +334,18 @@ export default function Agendamentos() {
   }, [selectedAgendamento]);
 
   return (
-    <div className={`container mx-auto p-4 ${isMobile ? "mt-12" : ""}`}>
+    <div
+      className={`container mx-auto p-4 ${
+        isMobile ? "mt-12" : ""
+      } agendamento-layout`}
+    >
       {isLoading &&
         !isTimeModalOpen &&
         !isFormModalOpen &&
         !isDetailsModalOpen && <LoadingScreen />}
       <div className="flex flex-col lg:flex-row gap-2 items-start relative z-10">
         {/* Calendário */}
-        <Card
-          className={`${
-            isMobile ? "w-[51vh]" : "w-full max-w-[400px]"
-          } flex-shrink-0`}
-        >
+        <Card className={`calendar-card flex-shrink-0`}>
           <CardHeader className="py-2">
             <CardTitle className="text-lg">Calendário</CardTitle>
           </CardHeader>
@@ -354,9 +355,9 @@ export default function Agendamentos() {
               mode="single"
               selected={selectedDate}
               onSelect={handleDateSelect}
-              className={` rounded-md border shadow-sm  ${
+              className={`rounded-md border shadow-sm calendar ${
                 isMobile ? "" : "pl-8"
-              }`}
+              }`} // Adicione a classe "calendar"
               disabled={(date) =>
                 date < new Date(new Date().setHours(0, 0, 0, 0))
               }
@@ -372,7 +373,7 @@ export default function Agendamentos() {
                 nav_button: "hover:bg-accent hover:text-accent-foreground",
                 nav_button_previous: "absolute left-1",
                 nav_button_next: "absolute right-1",
-                table: " w-full border-collapse space-y-1",
+                table: "w-full border-collapse space-y-1",
                 head_row: "flex w-full mt-2 pl-8 ",
                 head_cell:
                   "text-muted-foreground rounded-md w-9 font-normal text-md",
@@ -390,11 +391,7 @@ export default function Agendamentos() {
           </CardContent>
         </Card>
         {/* Tabela de Agendamentos */}
-        <Card
-          className={`flex-grow ${
-            isMobile ? "w-[51vh]" : "w-full max-w-[1000px]"
-          } overflow-hidden h-[calc(44vh-2rem)] lg:h-[calc(100vh-2rem)]`}
-        >
+        <Card className="schedule-card overflow-hidden h-[calc(44vh-2rem)] lg:h-[calc(100vh-2rem)]">
           <CardHeader>
             <CardTitle>Agendamentos do Dia</CardTitle>
           </CardHeader>
@@ -504,7 +501,9 @@ export default function Agendamentos() {
       </div>
 
       <Dialog open={isTimeModalOpen} onOpenChange={setIsTimeModalOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-md">
+          {" "}
+          {/* Ajuste da largura */}
           <DialogHeader>
             <DialogTitle>Selecione os horários</DialogTitle>
           </DialogHeader>
@@ -524,13 +523,19 @@ export default function Agendamentos() {
             </div>
           </ScrollArea>
           <DialogFooter>
-            <Button onClick={handleTimesConfirm}>Confirmar</Button>
+            <div className="flex justify-between gap-2">
+              {" "}
+              {/* Contêiner flexível para os botões */}
+              <Button onClick={handleTimesConfirm}>Confirmar</Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       <Dialog open={isFormModalOpen} onOpenChange={setIsFormModalOpen}>
-        <DialogContent className="z-50">
+        <DialogContent className="max-w-md z-50">
+          {" "}
+          {/* Ajuste da largura */}
           <DialogHeader>
             <DialogTitle>
               Agendar: {selectedDate?.toLocaleDateString()} -{" "}
@@ -591,22 +596,28 @@ export default function Agendamentos() {
             </div>
           </div>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setIsFormModalOpen(false);
-                setIsTimeModalOpen(false);
-              }}
-            >
-              Cancelar
-            </Button>
-            <Button onClick={handleFormSubmit}>Gravar</Button>
+            <div className="flex justify-between gap-2">
+              {" "}
+              {/* Contêiner flexível para os botões */}
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsFormModalOpen(false);
+                  setIsTimeModalOpen(false);
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button onClick={handleFormSubmit}>Gravar</Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       <Dialog open={isDetailsModalOpen} onOpenChange={setIsDetailsModalOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-md">
+          {" "}
+          {/* Ajuste da largura */}
           <DialogHeader>
             <DialogTitle>Detalhes do Agendamento</DialogTitle>
           </DialogHeader>
@@ -643,34 +654,38 @@ export default function Agendamentos() {
             </div>
           )}
           <DialogFooter>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                setIsDetailsModalOpen(false);
-                setIsFormModalOpen(true);
-              }}
-            >
-              <Edit className="h-4 w-4" />
-              <span className="sr-only">Editar</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (selectedAgendamento) {
-                  handleDeleteHorario(
-                    selectedAgendamento.id,
-                    selectedAgendamento.horarios[0]
-                  );
-                }
-                setIsDetailsModalOpen(false);
-              }}
-            >
-              <Trash2 className="h-4 w-4 text-red-500" />
-              <span className="sr-only">Deletar</span>
-            </Button>
+            <div className="flex justify-between gap-2">
+              {" "}
+              {/* Contêiner flexível para os botões */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  setIsDetailsModalOpen(false);
+                  setIsFormModalOpen(true);
+                }}
+              >
+                <Edit className="h-4 w-4" />
+                <span className="sr-only">Editar</span>
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (selectedAgendamento) {
+                    handleDeleteHorario(
+                      selectedAgendamento.id,
+                      selectedAgendamento.horarios[0]
+                    );
+                  }
+                  setIsDetailsModalOpen(false);
+                }}
+              >
+                <Trash2 className="h-4 w-4 text-red-500" />
+                <span className="sr-only">Deletar</span>
+              </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>

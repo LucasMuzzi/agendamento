@@ -27,6 +27,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import "./home.css";
 
 type Agendamento = {
   id: string;
@@ -134,9 +135,7 @@ export default function DashboardHome() {
   return (
     <div className={`container mx-auto p-4 ${isMobile ? "mt-12" : ""}`}>
       <Card
-        className={`flex-grow ${
-          isMobile ? "w-[51vh]" : "w-full max-w-[1000px]"
-        } overflow-hidden h-[89vh] lg:h-[calc(100vh-2rem)]`}
+        className={`schedule-card-home  overflow-hidden h-[calc(44vh-2rem)] lg:h-[calc(100vh-2rem)]`}
       >
         <CardHeader>
           <CardTitle>Agendamentos de Hoje</CardTitle>

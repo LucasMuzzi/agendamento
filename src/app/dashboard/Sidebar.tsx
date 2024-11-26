@@ -107,8 +107,7 @@ export default function Sidebar({
             isActive={pathname === "/"}
             isExpanded={isOpen}
             onClick={() => {
-              handleMenuClick(); // Chama a função de clique do menu
-              // Aqui você pode adicionar lógica adicional, se necessário
+              handleMenuClick();
             }}
           >
             Pagina inicial
@@ -119,8 +118,7 @@ export default function Sidebar({
             isActive={pathname === "/dashboard/agendamentos"}
             isExpanded={isOpen}
             onClick={() => {
-              handleMenuClick(); // Chama a função de clique do menu
-              // Aqui você pode adicionar lógica adicional, se necessário
+              handleMenuClick();
             }}
           >
             Agendamentos
@@ -131,7 +129,7 @@ export default function Sidebar({
             isActive={pathname === "/dashboard/clientes"}
             isExpanded={isOpen}
             onClick={() => {
-              handleMenuClick(); // Chama a função de clique do menu
+              handleMenuClick();
             }}
           >
             Cadastro de Clientes
@@ -142,7 +140,7 @@ export default function Sidebar({
             isActive={pathname === "/dashboard/configuracao"}
             isExpanded={isOpen}
             onClick={() => {
-              handleMenuClick(); // Chama a função de clique do menu
+              handleMenuClick();
             }}
           >
             Configurações
@@ -155,7 +153,12 @@ export default function Sidebar({
               handleMenuClick();
             }}
             className={`flex items-center space-x-2 text-red-600 hover:text-red-800 transition-colors w-full
-                ${isOpen ? "justify-start" : "justify-center"}`}
+              ${isOpen ? "justify-start" : "justify-center"}
+              ${
+                isMobile && !isOpen
+                  ? "fixed bottom-4 left-4 bg-white p-2 rounded-full shadow-md"
+                  : ""
+              }`}
           >
             <LogOut className="w-5 h-5" />
             {isOpen && <span>Logout</span>}

@@ -1,0 +1,52 @@
+/* Estilos para o card da tabela de agendamentos */
+.schedule-card-home {
+    transition: all 0.3s ease; /* Transição suave para mudanças de estilo */
+    width: 100%; /* O card ocupa toda a largura disponível */
+    height: 100vh; /* Altura total da tela para telas maiores */
+    overflow-y: auto; /* Adiciona barra de rolagem vertical se o conteúdo exceder a altura */
+    max-width: 1000px; /* Largura máxima para telas maiores */
+    margin: 0 auto; /* Centraliza o card */
+    padding: 0.5rem; /* Padding uniforme para o card */
+  }
+  
+  /* Estilos para os dias do calendário */
+  .h-9 {
+    height: 30px; /* Altura reduzida para dias no calendário */
+  }
+  
+  .w-9 {
+    width: 30px; /* Largura reduzida para dias no calendário */
+    font-size: 0.875rem; /* Tamanho da fonte reduzido para os números */
+  }
+  
+  /* Estilo para telas com largura de 320px */
+  @media (max-width: 320px) {
+    .schedule-card-home {
+      height: calc(100vh - 90px); /* Diminui a altura total em 40px (aproximadamente 20%) */
+      max-width: 100%; /* O card ocupa toda a largura da tela */
+    }
+  }
+  
+  /* Estilo para telas com largura de 375px (ex: iPhone 6/7/8) */
+  @media (max-width: 375px) {
+    .schedule-card-home {
+      height: calc(100vh - 90px); /* Diminui a altura total em 40px (aproximadamente 20%) */
+      max-width: 100%; /* O card ocupa toda a largura da tela */
+    }
+  }
+  
+  /* Estilo para telas com largura de 414px (ex: iPhone 6+/7+/8+) */
+  @media (max-width: 414px) {
+    .schedule-card-home {
+      height: calc(100vh - 90px); /* Diminui a altura total em 40px (aproximadamente 20%) */
+      max-width: 100%; /* O card ocupa toda a largura da tela */
+    }
+  }
+  
+  /* Estilo para telas maiores (acima de 414px) */
+  @media (min-width: 415px) {
+    .schedule-card-home {
+      height: calc(100vh - 90px); /* Diminui a altura total em 40px (aproximadamente 20%) */  
+      max-width: 1000px; /* Largura máxima para o card da tabela */
+    }
+  }

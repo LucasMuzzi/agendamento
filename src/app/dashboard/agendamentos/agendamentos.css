@@ -1,0 +1,101 @@
+/* agendamentos.css */
+
+/* Estilos gerais para o card do calendário */
+.calendar-card {
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 0.5rem;
+  overflow: hidden;
+}
+
+/* Estilos para o card da tabela de agendamentos */
+.schedule-card {
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0.5rem;
+}
+
+/* Estilos para os dias do calendário */
+.h-9 {
+  height: 30px;
+}
+
+.w-9 {
+  width: 30px;
+  font-size: 0.875rem;
+}
+
+/* Estilo base para o dialog */
+.dialog-content {
+  max-width: 600px; /* Largura máxima para telas grandes */
+  width: 100%; /* Largura padrão para telas menores */
+}
+
+/* Estilo para telas com largura de 320px */
+@media (max-width: 320px) {
+  .calendar-card,
+  .schedule-card,
+  .dialog-content {
+    max-width: 100%; /* O card ocupa toda a largura da tela */
+  }
+
+  .dialog-content {
+    max-width: 600px; /* Largura máxima para telas grandes */
+    width: 100%; /* Largura padrão para telas menores */
+  }
+
+  .calendar {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Estilo para telas com largura de 375px (ex: iPhone 6/7/8) */
+@media (max-width: 375px) {
+  .calendar-card,
+  .schedule-card,
+  .dialog-content {
+    max-width: 100%; /* O card ocupa toda a largura da tela */
+  }
+
+  .calendar {
+    padding-left: 0.8rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Estilo para telas com largura de 414px (ex: iPhone 6+/7+/8+) */
+@media (max-width: 414px) {
+  .calendar-card,
+  .schedule-card,
+  .dialog-content {
+    max-width: 100%; /* O card ocupa toda a largura da tela */
+  }
+
+  .calendar {
+    padding-left: 2rem; /* Corrigido para 2rem */
+    padding-right: 1rem;
+  }
+}
+
+/* Estilo para telas maiores (acima de 414px) */
+@media (min-width: 415px) {
+  .calendar-card {
+    max-width: 400px; /* Largura máxima para o card do calendário */
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .calendar {
+    padding-left: 1.8rem;
+    padding-right: 1.8rem;
+  }
+
+  .schedule-card {
+    max-width: 1000px; /* Largura máxima para o card da tabela */
+  }
+}
