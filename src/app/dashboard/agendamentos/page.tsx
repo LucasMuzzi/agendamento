@@ -408,7 +408,7 @@ export default function Agendamentos() {
                   {!isMobile && <TableHead>Contato</TableHead>}
                   {!isMobile && <TableHead>Serviço</TableHead>}
                   <TableHead>WhatsApp</TableHead>
-                  {!isMobile && <TableHead>Ações</TableHead>}
+                  {!isMobile && <TableHead>Excluir</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -433,8 +433,7 @@ export default function Agendamentos() {
                       className="cursor-pointer"
                       onClick={() => {
                         setSelectedAgendamento(agendamento);
-                        setIsDetailsModalOpen(true); // Apenas abre o modal de detalhes
-                        // Remover a chamada para abrir o modal de edição
+                        setIsDetailsModalOpen(true); // Abre o modal de detalhes
                       }}
                     >
                       <TableCell className="font-medium">
@@ -468,18 +467,6 @@ export default function Agendamentos() {
                       {!isMobile && (
                         <TableCell>
                           <div className="flex space-x-2">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={(e) => {
-                                e.stopPropagation(); // Impede a propagação do evento
-                                setSelectedAgendamento(agendamento);
-                                setIsFormModalOpen(true); // Agora só abre no desktop
-                              }}
-                            >
-                              <Edit className="h-4 w-4" />
-                              <span className="sr-only">Editar</span>
-                            </Button>
                             <Button
                               variant="ghost"
                               size="icon"
