@@ -156,11 +156,15 @@ export default function Agendamentos() {
   const handleTimesConfirm = useCallback(() => {
     if (selectedTimes.length > 0) {
       setIsTimeModalOpen(false); // Fecha o modal de horários
-      setTimeout(() => {
-        setIsFormModalOpen(true); // Abre o modal de confirmação após um atraso
-      }, 500); // Ajuste o tempo conforme necessário
+      setIsFormModalOpen(true); // Abre o modal de confirmação imediatamente
     }
   }, [selectedTimes]);
+
+  useEffect(() => {
+    if (!isTimeModalOpen && selectedTimes.length > 0) {
+      setIsFormModalOpen(true);
+    }
+  }, [isTimeModalOpen, selectedTimes]);
 
   const handleCreateAgendamento = useCallback(async () => {
     if (selectedDate && selectedTimes.length > 0 && nome && contato) {

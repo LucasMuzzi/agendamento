@@ -59,6 +59,8 @@ export default function DashboardHome() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  
+
   useEffect(() => {
     const fetchTodayAppointments = async () => {
       const userCookie = Cookies.get("info");
