@@ -433,7 +433,8 @@ export default function Agendamentos() {
                       className="cursor-pointer"
                       onClick={() => {
                         setSelectedAgendamento(agendamento);
-                        setIsDetailsModalOpen(true);
+                        setIsDetailsModalOpen(true); // Apenas abre o modal de detalhes
+                        // Remover a chamada para abrir o modal de edição
                       }}
                     >
                       <TableCell className="font-medium">
@@ -471,9 +472,9 @@ export default function Agendamentos() {
                               variant="ghost"
                               size="icon"
                               onClick={(e) => {
-                                e.stopPropagation();
+                                e.stopPropagation(); // Impede a propagação do evento
                                 setSelectedAgendamento(agendamento);
-                                setIsFormModalOpen(true);
+                                setIsFormModalOpen(true); // Agora só abre no desktop
                               }}
                             >
                               <Edit className="h-4 w-4" />
