@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -17,36 +18,24 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { PhoneIcon as WhatsappIcon, Edit, Trash2 } from "lucide-react";
+import { RegisterService } from "@/app/api/services/registerServices";
+import { ClienteForm } from "@/components/clientForm";
 
 type Cliente = {
   id: string;
   nome: string;
   contato: string;
-  whatsapp: string;
+  whatsapp: boolean;
 };
 
 export default function Clientes() {
-  const [clientes, setClientes] = useState<Cliente[]>([
-    {
-      id: "1",
-      nome: "João Silva",
-      contato: "11999999999",
-      whatsapp: "11999999999",
-    },
-    {
-      id: "2",
-      nome: "Maria Santos",
-      contato: "11988888888",
-      whatsapp: "11988888888",
-    },
-  ]);
+  const [clientes, setClientes] = useState<Cliente[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentCliente, setCurrentCliente] = useState<Cliente | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const registerService = new RegisterService();
 
   useEffect(() => {
     const handleResize = () => {
@@ -59,15 +48,52 @@ export default function Clientes() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const handleAddCliente = (cliente: Omit<Cliente, "id">) => {
-    const newCliente = { ...cliente, id: Date.now().toString() };
-    setClientes([...clientes, newCliente]);
-    setIsModalOpen(false);
+  // Fetch clients on component mount
+  useEffect(() => {
+    const fetchClientes = async () => {
+      try {
+        const response = await registerService.buscarClientesPorCodUser();
+        const fetchedClientes = response.clients.map((cliente) => ({
+          id: cliente._id,
+          nome: cliente.name,
+          contato: cliente.phone,
+          whatsapp: cliente.whatsapp,
+        }));
+        setClientes(fetchedClientes);
+      } catch (error) {
+        console.error("Erro ao buscar clientes:", error);
+      }
+    };
+
+    fetchClientes();
+  }, []);
+
+  const handleSaveCliente = async (cliente: Omit<Cliente, "id">) => {
+    try {
+      console.log("Cliente a ser salvo:", cliente); // Log antes da requisição
+      const response = await registerService.registrarCliente({
+        name: cliente.nome,
+        phone: cliente.contato,
+        whatsapp: cliente.whatsapp,
+      });
+      const newCliente = { ...cliente, id: response.client._id };
+      setClientes([...clientes, newCliente]);
+      setIsModalOpen(false);
+      setCurrentCliente(null);
+    } catch (error) {
+      console.error("Erro ao adicionar cliente:", error);
+    }
   };
 
-  const handleEditCliente = (cliente: Cliente) => {
-    setClientes(clientes.map((c) => (c.id === cliente.id ? cliente : c)));
-    setIsModalOpen(false);
+  const handleEditCliente = async (cliente: Omit<Cliente, "id">) => {
+    if (currentCliente) {
+      const updatedCliente = { ...currentCliente, ...cliente };
+      setClientes(
+        clientes.map((c) => (c.id === updatedCliente.id ? updatedCliente : c))
+      );
+      setIsModalOpen(false);
+      setCurrentCliente(null);
+    }
   };
 
   const handleDeleteCliente = (id: string) => {
@@ -86,7 +112,12 @@ export default function Clientes() {
           <div className="flex justify-between items-center mb-4">
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
               <DialogTrigger asChild>
-                <Button onClick={() => setCurrentCliente(null)}>
+                <Button
+                  onClick={() => {
+                    setCurrentCliente(null);
+                    setIsModalOpen(true);
+                  }}
+                >
                   Cadastrar Cliente
                 </Button>
               </DialogTrigger>
@@ -101,7 +132,7 @@ export default function Clientes() {
                 <ClienteForm
                   cliente={currentCliente}
                   onSubmit={
-                    currentCliente ? handleEditCliente : handleAddCliente
+                    currentCliente ? handleEditCliente : handleSaveCliente
                   }
                 />
               </DialogContent>
@@ -124,11 +155,17 @@ export default function Clientes() {
                     <TableCell>{cliente.contato}</TableCell>
                     <TableCell>
                       <a
-                        href={`https://wa.me/${cliente.whatsapp}`}
+                        href={`https://wa.me/${
+                          cliente.whatsapp ? cliente.contato : ""
+                        }`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <Button variant="ghost" size="icon">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          disabled={!cliente.whatsapp}
+                        >
                           <WhatsappIcon className="h-5 w-5 text-green-500" />
                         </Button>
                       </a>
@@ -136,23 +173,23 @@ export default function Clientes() {
                     <TableCell>
                       <div className="flex space-x-2">
                         <Button
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
                           onClick={() => {
                             setCurrentCliente(cliente);
                             setIsModalOpen(true);
                           }}
                         >
-                          <Edit className="h-4 w-4 mr-2" />
-                          Editar
+                          <Edit className="h-4 w-4" />
+                          <span className="sr-only">Editar</span>
                         </Button>
                         <Button
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
                           onClick={() => handleDeleteCliente(cliente.id)}
                         >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Excluir
+                          <Trash2 className="h-4 w-4 text-red-500" />
+                          <span className="sr-only">Deletar</span>
                         </Button>
                       </div>
                     </TableCell>
@@ -164,60 +201,5 @@ export default function Clientes() {
         </CardContent>
       </Card>
     </div>
-  );
-}
-
-function ClienteForm({
-  cliente,
-  onSubmit,
-}: {
-  cliente: Cliente | null;
-  onSubmit: (cliente: Cliente) => void;
-}) {
-  const [nome, setNome] = useState(cliente?.nome || "");
-  const [contato, setContato] = useState(cliente?.contato || "");
-  const [whatsapp, setWhatsapp] = useState(cliente?.whatsapp || "");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit({
-      id: cliente?.id || "",
-      nome,
-      contato,
-      whatsapp,
-    });
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <Label htmlFor="nome">Nome</Label>
-        <Input
-          id="nome"
-          value={nome}
-          onChange={(e) => setNome(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <Label htmlFor="contato">Contato</Label>
-        <Input
-          id="contato"
-          value={contato}
-          onChange={(e) => setContato(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <Label htmlFor="whatsapp">WhatsApp</Label>
-        <Input
-          id="whatsapp"
-          value={whatsapp}
-          onChange={(e) => setWhatsapp(e.target.value)}
-          required
-        />
-      </div>
-      <Button type="submit">Salvar</Button>
-    </form>
   );
 }

@@ -433,7 +433,7 @@ export default function Agendamentos() {
                       className="cursor-pointer"
                       onClick={() => {
                         setSelectedAgendamento(agendamento);
-                        setIsDetailsModalOpen(true); // Abre o modal de detalhes
+                        setIsDetailsModalOpen(true); 
                       }}
                     >
                       <TableCell className="font-medium">
