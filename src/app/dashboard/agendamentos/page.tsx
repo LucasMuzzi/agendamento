@@ -160,11 +160,11 @@ export default function Agendamentos() {
     }
   }, [selectedTimes]);
 
-  useEffect(() => {
-    if (!isTimeModalOpen && selectedTimes.length > 0) {
-      setIsFormModalOpen(true);
-    }
-  }, [isTimeModalOpen, selectedTimes]);
+  // useEffect(() => {
+  //   if (!isTimeModalOpen && selectedTimes.length > 0) {
+  //     setIsFormModalOpen(true);
+  //   }
+  // }, [isTimeModalOpen, selectedTimes]);
 
   const handleCreateAgendamento = useCallback(async () => {
     if (selectedDate && selectedTimes.length > 0 && nome && contato) {
@@ -408,7 +408,7 @@ export default function Agendamentos() {
                   {!isMobile && <TableHead>Contato</TableHead>}
                   {!isMobile && <TableHead>Serviço</TableHead>}
                   <TableHead>WhatsApp</TableHead>
-                  {!isMobile && <TableHead>Excluir</TableHead>}
+                  {!isMobile && <TableHead>Ações</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -467,6 +467,17 @@ export default function Agendamentos() {
                       {!isMobile && (
                         <TableCell>
                           <div className="flex space-x-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                setIsDetailsModalOpen(false);
+                                setIsFormModalOpen(true);
+                              }}
+                            >
+                              <Edit className="h-4 w-4" />
+                              <span className="sr-only">Editar</span>
+                            </Button>
                             <Button
                               variant="ghost"
                               size="icon"
