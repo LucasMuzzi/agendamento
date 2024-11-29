@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { PhoneIcon as WhatsappIcon, Edit, Trash2 } from "lucide-react";
+import { FaRegUser } from "react-icons/fa";
 import {
   Select,
   SelectContent,
@@ -41,6 +42,7 @@ import Cookies from "js-cookie";
 import { ptBR } from "date-fns/locale";
 import { LoadingScreen } from "@/components/loading";
 import "./agendamentos.css";
+import { ClientFilterModal } from "@/components/clientFilterModal";
 
 type Agendamento = {
   id: any;
@@ -72,6 +74,7 @@ export default function Agendamentos() {
   const [isMobile, setIsMobile] = useState(false);
   const [bookedTimeSlots, setBookedTimeSlots] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isClientFilterModalOpen, setIsClientFilterModalOpen] = useState(false);
 
   const agendamentoService = new AgendamentoService();
 
@@ -155,16 +158,10 @@ export default function Agendamentos() {
 
   const handleTimesConfirm = useCallback(() => {
     if (selectedTimes.length > 0) {
-      setIsTimeModalOpen(false); // Fecha o modal de horários
-      setIsFormModalOpen(true); // Abre o modal de confirmação imediatamente
+      setIsTimeModalOpen(false);
+      setIsFormModalOpen(true);
     }
   }, [selectedTimes]);
-
-  // useEffect(() => {
-  //   if (!isTimeModalOpen && selectedTimes.length > 0) {
-  //     setIsFormModalOpen(true);
-  //   }
-  // }, [isTimeModalOpen, selectedTimes]);
 
   const handleCreateAgendamento = useCallback(async () => {
     if (selectedDate && selectedTimes.length > 0 && nome && contato) {
@@ -337,6 +334,26 @@ export default function Agendamentos() {
     }
   }, [selectedAgendamento]);
 
+  const handleClientSelect = useCallback(
+    (client: { whatsapp: boolean; name: string; phone: string }) => {
+      console.log("Cliente selecionado:", client); // Para depuração
+
+      // Atualiza os estados com os dados do cliente selecionado
+      setNome(client.name || ""); // Use 'name' em vez de 'nome'
+      setContato(client.phone || ""); // Use 'phone' em vez de 'contato'
+      setIsWhatsapp(client.whatsapp); // Mantenha 'whatsapp' como está
+
+      // Logs para verificar os estados
+      console.log("Nome após seleção:", client.name); // Use 'name'
+      console.log("Contato após seleção:", client.phone); // Use 'phone'
+      console.log("WhatsApp após seleção:", client.whatsapp); // Mantenha 'whatsapp'
+
+      // Fecha o modal de seleção de cliente
+      setIsClientFilterModalOpen(false);
+    },
+    []
+  );
+
   return (
     <div
       className={`container mx-auto p-4 ${
@@ -433,7 +450,7 @@ export default function Agendamentos() {
                       className="cursor-pointer"
                       onClick={() => {
                         setSelectedAgendamento(agendamento);
-                        setIsDetailsModalOpen(true); 
+                        setIsDetailsModalOpen(true);
                       }}
                     >
                       <TableCell className="font-medium">
@@ -545,7 +562,23 @@ export default function Agendamentos() {
               {selectedTimes.join(", ")}
             </DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
+          <div className="grid gap-4 ">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="nome" className="text-right">
+                Clientes
+              </Label>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsClientFilterModalOpen(true)}
+                className="w-auto " // Ajuste a largura do botão
+              >
+                <FaRegUser className="h-4 w-4" />
+                <span className="sr-only">Filtrar Clientes</span>
+              </Button>
+            </div>
+          </div>
+          <div className="grid gap-4 ">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="nome" className="text-right">
                 Nome
@@ -582,7 +615,7 @@ export default function Agendamentos() {
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="tipoServico" className="text-right">
-                Tipo de Serviço
+                Serviço
               </Label>
               <Select value={tipoServico} onValueChange={setTipoServico}>
                 <SelectTrigger className="col-span-3">
@@ -659,7 +692,6 @@ export default function Agendamentos() {
           <DialogFooter>
             <div className="flex justify-between gap-2">
               {" "}
-              {/* Contêiner flexível para os botões */}
               <Button
                 variant="ghost"
                 size="icon"
@@ -692,6 +724,11 @@ export default function Agendamentos() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <ClientFilterModal
+        isOpen={isClientFilterModalOpen}
+        onClose={() => setIsClientFilterModalOpen(false)}
+        onSelectClient={handleClientSelect}
+      />
     </div>
   );
 }

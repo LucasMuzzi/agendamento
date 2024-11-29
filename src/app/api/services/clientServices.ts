@@ -29,7 +29,7 @@ interface GetClientsResponse {
   clients: Client[];
 }
 
-export class RegisterService {
+export class clientService {
   async registrarCliente(body: {
     name: string;
     phone: string;
@@ -53,9 +53,11 @@ export class RegisterService {
       codUser,
     };
 
+    console.log(requestBody);
+
     try {
       const response = await apiAgend.post<RegisterResponse>(
-        "/api/register-user",
+        "/api/register-client",
         requestBody
       );
       return response.data;
@@ -76,14 +78,15 @@ export class RegisterService {
     const { codUser } = parsedData;
 
     if (!codUser) {
-      throw new Error("CodUser  não encontrado no cookie");
+      throw new Error("CodUser não encontrado no cookie");
     }
 
     try {
       const response = await apiAgend.post<GetClientsResponse>(
         "/api/get-clients",
-        codUser
+        { codUser }
       );
+
       return response.data;
     } catch (error) {
       console.error("Erro ao buscar clientes:", error);

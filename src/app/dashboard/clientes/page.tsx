@@ -20,8 +20,9 @@ import {
 } from "@/components/ui/dialog";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { PhoneIcon as WhatsappIcon, Edit, Trash2 } from "lucide-react";
-import { RegisterService } from "@/app/api/services/registerServices";
+
 import { ClienteForm } from "@/components/clientForm";
+import { clientService } from "@/app/api/services/clientServices";
 
 type Cliente = {
   id: string;
@@ -35,7 +36,7 @@ export default function Clientes() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentCliente, setCurrentCliente] = useState<Cliente | null>(null);
   const [isMobile, setIsMobile] = useState(false);
-  const registerService = new RegisterService();
+  const ClientService = new clientService();
 
   useEffect(() => {
     const handleResize = () => {
@@ -48,11 +49,11 @@ export default function Clientes() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Fetch clients on component mount
   useEffect(() => {
     const fetchClientes = async () => {
       try {
-        const response = await registerService.buscarClientesPorCodUser();
+        const response = await ClientService.buscarClientesPorCodUser();
+
         const fetchedClientes = response.clients.map((cliente) => ({
           id: cliente._id,
           nome: cliente.name,
@@ -71,7 +72,7 @@ export default function Clientes() {
   const handleSaveCliente = async (cliente: Omit<Cliente, "id">) => {
     try {
       console.log("Cliente a ser salvo:", cliente); // Log antes da requisição
-      const response = await registerService.registrarCliente({
+      const response = await ClientService.registrarCliente({
         name: cliente.nome,
         phone: cliente.contato,
         whatsapp: cliente.whatsapp,
