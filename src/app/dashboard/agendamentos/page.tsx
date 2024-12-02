@@ -43,6 +43,7 @@ import { ptBR } from "date-fns/locale";
 import { LoadingScreen } from "@/components/loading";
 import "./agendamentos.css";
 import { ClientFilterModal } from "@/components/clientFilterModal";
+import { ServiceType, Settings } from "@/app/api/services/settingsServices";
 
 type Agendamento = {
   id: any;
@@ -53,8 +54,6 @@ type Agendamento = {
   isWhatsapp: boolean;
   tipoServico: string;
 };
-
-const tiposServico = ["Cabelo", "Barba", "Cabelo + Barba"];
 
 export default function Agendamentos() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
@@ -68,7 +67,10 @@ export default function Agendamentos() {
   const [nome, setNome] = useState("");
   const [contato, setContato] = useState("");
   const [isWhatsapp, setIsWhatsapp] = useState(false);
-  const [tipoServico, setTipoServico] = useState(tiposServico[0]);
+  const [serviceTypes, setServiceTypes] = useState<ServiceType[]>([]);
+  const [tipoServico, setTipoServico] = useState(
+    serviceTypes.length > 0 ? serviceTypes[0].nome : ""
+  );
   const [selectedAgendamento, setSelectedAgendamento] =
     useState<Agendamento | null>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -88,6 +90,21 @@ export default function Agendamentos() {
 
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const fetchServiceTypes = useCallback(async () => {
+    const settings = new Settings();
+    try {
+      const types = await settings.fetchServiceTypes();
+      setServiceTypes(types);
+      setTipoServico(types.length > 0 ? types[0].nome : "");
+    } catch (error) {
+      console.error("Erro ao buscar tipos de serviço:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchServiceTypes();
+  }, [fetchServiceTypes]);
 
   useEffect(() => {
     const fetchAgendamentos = async () => {
@@ -201,12 +218,12 @@ export default function Agendamentos() {
         setNome("");
         setContato("");
         setIsWhatsapp(false);
-        setTipoServico(tiposServico[0]);
+        setTipoServico(serviceTypes.length > 0 ? serviceTypes[0].nome : ""); // Limpa para o primeiro tipo de serviço ou vazio se não houver
 
         // Recarregue a página
         setTimeout(() => {
           window.location.reload();
-        }, 500); // Adjust the delay as needed
+        }, 500); // Ajuste o atraso conforme necessário
       } catch (error) {
         console.error("Erro ao gravar agendamento:", error);
       } finally {
@@ -221,6 +238,7 @@ export default function Agendamentos() {
     isWhatsapp,
     tipoServico,
     agendamentoService,
+    serviceTypes, // Adicione serviceTypes como dependência
   ]);
 
   const handleEditAgendamento = useCallback(async () => {
@@ -233,7 +251,7 @@ export default function Agendamentos() {
     ) {
       const userCookie = Cookies.get("info");
       if (!userCookie) {
-        console.error("User cookie not found");
+        console.error("User  cookie not found");
         return;
       }
 
@@ -270,7 +288,7 @@ export default function Agendamentos() {
         setNome("");
         setContato("");
         setIsWhatsapp(false);
-        setTipoServico(tiposServico[0]);
+        setTipoServico(serviceTypes.length > 0 ? serviceTypes[0].nome : ""); // Limpa para o primeiro tipo de serviço ou vazio se não houver
       } catch (error) {
         console.error("Erro ao atualizar agendamento:", error);
       }
@@ -284,6 +302,7 @@ export default function Agendamentos() {
     isWhatsapp,
     tipoServico,
     agendamentoService,
+    serviceTypes, // Adicione serviceTypes como dependência
   ]);
 
   const handleFormSubmit = useCallback(() => {
@@ -336,17 +355,10 @@ export default function Agendamentos() {
 
   const handleClientSelect = useCallback(
     (client: { whatsapp: boolean; name: string; phone: string }) => {
-      console.log("Cliente selecionado:", client); // Para depuração
-
       // Atualiza os estados com os dados do cliente selecionado
       setNome(client.name || ""); // Use 'name' em vez de 'nome'
       setContato(client.phone || ""); // Use 'phone' em vez de 'contato'
       setIsWhatsapp(client.whatsapp); // Mantenha 'whatsapp' como está
-
-      // Logs para verificar os estados
-      console.log("Nome após seleção:", client.name); // Use 'name'
-      console.log("Contato após seleção:", client.phone); // Use 'phone'
-      console.log("WhatsApp após seleção:", client.whatsapp); // Mantenha 'whatsapp'
 
       // Fecha o modal de seleção de cliente
       setIsClientFilterModalOpen(false);
@@ -618,13 +630,13 @@ export default function Agendamentos() {
                 Serviço
               </Label>
               <Select value={tipoServico} onValueChange={setTipoServico}>
-                <SelectTrigger className="col-span-3">
+                <SelectTrigger>
                   <SelectValue placeholder="Selecione o tipo de serviço" />
                 </SelectTrigger>
                 <SelectContent>
-                  {tiposServico.map((tipo) => (
-                    <SelectItem key={tipo} value={tipo}>
-                      {tipo}
+                  {serviceTypes.map((tipo) => (
+                    <SelectItem key={tipo._id} value={tipo.nome}>
+                      {tipo.nome}
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -21,7 +21,7 @@ export interface Client {
 type ClientFilterModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSelectClient: (client: any) => void; // Mudei para usar a interface Client
+  onSelectClient: (client: any) => void;
 };
 
 export function ClientFilterModal({
@@ -29,7 +29,7 @@ export function ClientFilterModal({
   onClose,
   onSelectClient,
 }: ClientFilterModalProps) {
-  const [searchTerm, setSearchTerm] = useState<string>(""); // Inicializa como string
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [clients, setClients] = useState<Client[]>([]);
 
   // Função para buscar clientes
@@ -72,7 +72,6 @@ export function ClientFilterModal({
             value={searchTerm ?? ""} // Garante que o valor seja sempre uma string
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <Button onClick={() => fetchClients(searchTerm)}>Buscar</Button>
         </div>
         <ScrollArea className="h-[300px]">
           {clients.map((client) => (

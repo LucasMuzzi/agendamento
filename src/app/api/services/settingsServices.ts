@@ -7,29 +7,33 @@ interface CreateServiceTypeRequest {
 }
 
 export interface ServiceType {
-  id: string; // ou outro tipo que identifique o serviço
+  _id: string;
   nome: string;
 }
 
 export class Settings {
-  private codUser: string;
+  private codUser: string | null = null;
 
-  constructor() {
+  constructor() {}
+
+  // Método para obter o codUser a partir do cookie (somente no cliente)
+  getCodUserFromCookie(): string | null {
     const cookieData = Cookies.get("info");
-
-    if (!cookieData) {
-      throw new Error("Cookie 'info' não encontrado");
+    if (cookieData) {
+      const parsedData = JSON.parse(cookieData);
+      return parsedData.codUser || null;
     }
-
-    const parsedData = JSON.parse(cookieData);
-    this.codUser = parsedData.codUser;
-
-    if (!this.codUser) {
-      throw new Error("CodUser não encontrado no cookie");
-    }
+    return null;
   }
 
   async createServiceType(body: CreateServiceTypeRequest): Promise<any> {
+    if (!this.codUser) {
+      this.codUser = this.getCodUserFromCookie();
+      if (!this.codUser) {
+        throw new Error("CodUser não encontrado no cookie");
+      }
+    }
+
     const requestBody = {
       ...body,
       codUser: this.codUser,
@@ -45,22 +49,18 @@ export class Settings {
   }
 
   async fetchServiceTypes(): Promise<ServiceType[]> {
-    try {
-      const cookieData = Cookies.get("info");
-
-      if (!cookieData) {
-        throw new Error("Cookie 'info' não encontrado");
+    if (!this.codUser) {
+      this.codUser = this.getCodUserFromCookie();
+      if (!this.codUser) {
+        throw new Error("CodUser não encontrado no cookie");
       }
+    }
 
-      const parsedData = JSON.parse(cookieData);
-      this.codUser = parsedData.codUser;
-
-      console.log(this.codUser);
-
+    try {
       const response = await apiAgend.post("/api/get-service", {
         codUser: this.codUser,
       });
-      console.log(response);
+
       return response.data;
     } catch (error) {
       console.error("Erro ao buscar tipos de serviço:", error);
