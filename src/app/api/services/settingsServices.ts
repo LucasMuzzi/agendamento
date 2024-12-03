@@ -67,4 +67,32 @@ export class Settings {
       throw error;
     }
   }
+
+  async createSchedule(
+    horarioInicio: string,
+    horarioFim: string,
+    intervalo: string
+  ): Promise<any> {
+    if (!this.codUser) {
+      this.codUser = this.getCodUserFromCookie();
+      if (!this.codUser) {
+        throw new Error("CodUser não encontrado no cookie");
+      }
+    }
+
+    const requestBody = {
+      horarioInicio,
+      horarioFim,
+      intervalo,
+      codUser: this.codUser,
+    };
+
+    try {
+      const response = await apiAgend.post("/api/create-schedule", requestBody);
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao criar horário:", error);
+      throw error;
+    }
+  }
 }
