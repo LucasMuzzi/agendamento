@@ -44,7 +44,10 @@ import { ptBR } from "date-fns/locale";
 import { LoadingScreen } from "@/components/loading";
 import "./agendamentos.css";
 import { ClientFilterModal } from "@/components/clientFilterModal";
-import { ServiceType, Settings } from "@/app/api/services/settingsServices";
+import {
+  ServiceType,
+  SettingsSerivce,
+} from "@/app/api/services/settingsServices";
 import { useToast } from "@/hooks/use-toast";
 
 type Agendamento = {
@@ -96,7 +99,7 @@ export default function Agendamentos() {
   }, []);
 
   const fetchServiceTypes = useCallback(async () => {
-    const settings = new Settings();
+    const settings = new SettingsSerivce();
     try {
       const types = await settings.fetchServiceTypes();
       setServiceTypes(types);
@@ -170,7 +173,7 @@ export default function Agendamentos() {
   const handleScheduleClick = useCallback(async () => {
     setIsTimeModalOpen(true);
     try {
-      const settings = new Settings();
+      const settings = new SettingsSerivce();
       const scheduleData = await settings.fetchSchedule();
 
       // Log para verificar a resposta da API
@@ -238,7 +241,6 @@ export default function Agendamentos() {
           className: "bg-green-500 text-white",
           duration: 3000,
         });
-
 
         // Recarregue a página
         setTimeout(() => {
@@ -332,7 +334,8 @@ export default function Agendamentos() {
         // Adicione um toaster de erro
         toast({
           title: "Erro ao atualizar agendamento",
-          description: "Ocorreu um erro ao atualizar o agendamento. Tente novamente.",
+          description:
+            "Ocorreu um erro ao atualizar o agendamento. Tente novamente.",
           duration: 3000,
           variant: "destructive",
         });
@@ -352,7 +355,6 @@ export default function Agendamentos() {
     serviceTypes,
     toast,
   ]);
-
 
   const handleFormSubmit = useCallback(() => {
     if (selectedAgendamento) {

@@ -11,7 +11,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Settings } from "@/app/api/services/settingsServices";
+import { SettingsSerivce } from "@/app/api/services/settingsServices";
 import { useToast } from "@/hooks/use-toast";
 import { AxiosError } from "axios";
 import Image from "next/image";
@@ -27,7 +27,7 @@ export default function Configuracoes() {
   const [isLogoSaved, setIsLogoSaved] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const settings = new Settings();
+  const settings = new SettingsSerivce();
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -99,6 +99,7 @@ export default function Configuracoes() {
       try {
         await handleUploadLogo();
         setIsLogoSaved(true);
+        window.location.reload();
         toast({
           title: "Sucesso",
           description: "Logo salvo com sucesso",

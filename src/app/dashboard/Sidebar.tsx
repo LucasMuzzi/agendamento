@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import {
@@ -15,8 +15,10 @@ import {
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { LoginClass } from "../api/services/authServices";
+import { SettingsSerivce } from "../api/services/settingsServices";
 
 const loginClass = new LoginClass();
+const settings = new SettingsSerivce();
 
 interface SidebarProps {
   isOpen: boolean;
@@ -31,9 +33,22 @@ export default function Sidebar({
   isMobile,
   onMenuClick,
 }: SidebarProps) {
-  const [logo] = useState("/placeholder.svg?height=50&width=50");
+  const [logo, setLogo] = useState("/placeholder.svg?height=50&width=50");
   const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    const fetchLogo = async () => {
+      try {
+        const imageUrl = await settings.fetchImage();
+        setLogo(imageUrl);
+      } catch (error) {
+        console.error("Erro ao buscar o logo:", error);
+      }
+    };
+
+    fetchLogo();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -51,7 +66,6 @@ export default function Sidebar({
 
   return (
     <>
-      {/* Div fixa no topo para o botão de menu */}
       {isMobile && (
         <div
           className="fixed top-0 left-0 w-full bg-white shadow-md z-50 h-12 flex items-center px-4"
@@ -68,7 +82,6 @@ export default function Sidebar({
         </div>
       )}
 
-      {/* Menu lateral */}
       <aside
         className={`${
           isMobile
@@ -76,22 +89,30 @@ export default function Sidebar({
                 isOpen ? "translate-x-0" : "-translate-x-full"
               }`
             : "relative h-screen bg-white shadow-md"
-        } flex flex-col ${isOpen ? "w-64" : "w-16"}`}
+        } flex flex-col ${isOpen ? "w-64" : "w-20"}`}
         style={isMobile ? { zIndex: 99, marginTop: "3rem" } : {}}
       >
-        <div className="p-4 flex items-center justify-between">
+        <div className="p-4 flex flex-col items-center justify-center">
           <div
-            className={`overflow-hidden transition-all duration-300 ease-in-out ${
-              isOpen ? "w-auto" : "w-0"
+            className={`flex items-center justify-center transition-all duration-300 ease-in-out ${
+              isOpen ? "w-12 h-12" : "w-14 h-14"
             }`}
           >
-            <Image src={logo} alt="Logo" width={50} height={50} />
+            <div className="relative w-full h-full overflow-hidden bg-gray-100 rounded-full">
+              <Image
+                src={logo}
+                alt="Logo"
+                layout="fill"
+                objectFit="cover"
+                className="rounded-full"
+              />
+            </div>
           </div>
           <Button
             variant="ghost"
             size="icon"
             onClick={onToggle}
-            className="rounded-full p-2"
+            className="rounded-full p-2 mt-2"
           >
             {isOpen ? (
               <ChevronLeft className="h-4 w-4" />
@@ -106,9 +127,7 @@ export default function Sidebar({
             icon={<Home className="w-5 h-5" />}
             isActive={pathname === "/"}
             isExpanded={isOpen}
-            onClick={() => {
-              handleMenuClick();
-            }}
+            onClick={handleMenuClick}
           >
             Pagina inicial
           </SidebarLink>
@@ -117,9 +136,7 @@ export default function Sidebar({
             icon={<Menu className="w-5 h-5" />}
             isActive={pathname === "/dashboard/agendamentos"}
             isExpanded={isOpen}
-            onClick={() => {
-              handleMenuClick();
-            }}
+            onClick={handleMenuClick}
           >
             Agendamentos
           </SidebarLink>
@@ -128,9 +145,7 @@ export default function Sidebar({
             icon={<Users className="w-5 h-5" />}
             isActive={pathname === "/dashboard/clientes"}
             isExpanded={isOpen}
-            onClick={() => {
-              handleMenuClick();
-            }}
+            onClick={handleMenuClick}
           >
             Cadastro de Clientes
           </SidebarLink>
@@ -139,9 +154,7 @@ export default function Sidebar({
             icon={<Settings className="w-5 h-5" />}
             isActive={pathname === "/dashboard/configuracao"}
             isExpanded={isOpen}
-            onClick={() => {
-              handleMenuClick();
-            }}
+            onClick={handleMenuClick}
           >
             Configurações
           </SidebarLink>
@@ -166,7 +179,6 @@ export default function Sidebar({
         </div>
       </aside>
 
-      {/* Espaço para o conteúdo principal */}
       {isMobile && isOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-30"
