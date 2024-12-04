@@ -3,7 +3,13 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Settings } from "@/app/api/services/settingsServices";
 import { useToast } from "@/hooks/use-toast";
@@ -88,22 +94,44 @@ export default function Configuracoes() {
     setServicoNovo(e.target.value);
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSaveLogo = async () => {
+    if (logoFile) {
+      try {
+        await handleUploadLogo();
+        setIsLogoSaved(true);
+        toast({
+          title: "Sucesso",
+          description: "Logo salvo com sucesso",
+          duration: 3000,
+          className: "bg-green-500 text-white",
+        });
+      } catch (error) {
+        console.error("Erro ao salvar logo:", error);
+        toast({
+          title: "Erro",
+          description: "Falha ao salvar logo",
+          duration: 3000,
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  const handleSaveOperatingHours = async () => {
     try {
-      await handleUploadLogo();
-      // Lógica adicional para salvar outras configurações pode ir aqui
+      // Chame a função createSchedule com os três argumentos
+      await settings.createSchedule(startTime, endTime, interval);
       toast({
         title: "Sucesso",
-        description: "Configurações salvas",
+        description: "Horários de funcionamento salvos com sucesso",
         duration: 3000,
         className: "bg-green-500 text-white",
       });
     } catch (error) {
-      console.error("Erro ao salvar configurações:", error);
+      console.error("Erro ao salvar horários de funcionamento:", error);
       toast({
         title: "Erro",
-        description: "Falha ao salvar configurações",
+        description: "Falha ao salvar horários de funcionamento",
         duration: 3000,
         variant: "destructive",
       });
@@ -116,52 +144,58 @@ export default function Configuracoes() {
         <CardHeader>
           <CardTitle>Configurações do Site</CardTitle>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="logo-upload">Logo do Site</Label>
-              <div className="flex items-center space-x-4">
-                <Button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  Selecionar Logo
-                </Button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  id="logo-upload"
-                  accept="image/*"
-                  onChange={handleLogoChange}
-                  className="hidden"
-                />
-                {logoPreview && !isLogoSaved && (
-                  <div className="relative w-16 h-16 border border-gray-300 rounded">
-                    <Image
-                      src={logoPreview}
-                      alt="Logo preview"
-                      layout="fill"
-                      objectFit="contain"
-                    />
-                  </div>
-                )}
-              </div>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="logo-upload">Logo do Site</Label>
+            <div className="flex items-center space-x-4">
+              <Button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                Selecionar Logo
+              </Button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                id="logo-upload"
+                accept="image/*"
+                onChange={handleLogoChange}
+                className="hidden"
+              />
+              {logoPreview && !isLogoSaved && (
+                <div className="relative w-16 h-16 border border-gray-300 rounded">
+                  <Image
+                    src={logoPreview}
+                    alt="Logo preview"
+                    layout="fill"
+                    objectFit="contain"
+                  />
+                </div>
+              )}
+              <Button
+                onClick={handleSaveLogo}
+                disabled={!logoFile || isLogoSaved}
+              >
+                Salvar Logo
+              </Button>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="novo-servico">Adicionar Tipo de Serviço</Label>
-              <div className="flex space-x-2">
-                <Input
-                  type="text"
-                  id="novo-servico"
-                  value={servicoNovo}
-                  onChange={handleServicoChange}
-                  placeholder="Novo tipo de serviço"
-                />
-                <Button type="button" onClick={handleAddServico}>
-                  Adicionar
-                </Button>
-              </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="novo-servico">Adicionar Tipo de Serviço</Label>
+            <div className="flex space-x-2">
+              <Input
+                type="text"
+                id="novo-servico"
+                value={servicoNovo}
+                onChange={handleServicoChange}
+                placeholder="Novo tipo de serviço"
+              />
+              <Button type="button" onClick={handleAddServico}>
+                Adicionar
+              </Button>
             </div>
+          </div>
+          <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="start-time">Horário de Início</Label>
@@ -196,13 +230,12 @@ export default function Configuracoes() {
                 />
               </div>
             </div>
-            <Button type="submit" className="w-full">
-              Salvar Configurações
+            <Button onClick={handleSaveOperatingHours}>
+              Salvar Horários de Funcionamento
             </Button>
-          </form>
+          </div>
         </CardContent>
       </Card>
     </div>
   );
 }
-

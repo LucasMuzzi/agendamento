@@ -87,6 +87,8 @@ export class Settings {
       codUser: this.codUser,
     };
 
+    console.log(requestBody);
+
     try {
       const response = await apiAgend.post("/api/create-schedule", requestBody);
       return response.data;
