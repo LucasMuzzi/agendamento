@@ -95,4 +95,24 @@ export class Settings {
       throw error;
     }
   }
+
+  async fetchSchedule(): Promise<any> {
+    if (!this.codUser) {
+      this.codUser = this.getCodUserFromCookie();
+      if (!this.codUser) {
+        throw new Error("CodUser  não encontrado no cookie");
+      }
+    }
+
+    try {
+      const response = await apiAgend.post("/api/get-schedule", {
+        codUser: this.codUser,
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao buscar horários:", error);
+      throw error;
+    }
+  }
 }

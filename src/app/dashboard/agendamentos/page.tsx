@@ -77,6 +77,7 @@ export default function Agendamentos() {
   const [bookedTimeSlots, setBookedTimeSlots] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isClientFilterModalOpen, setIsClientFilterModalOpen] = useState(false);
+  const [fetchedSchedule, setFetchedSchedule] = useState<string[]>([]);
 
   const agendamentoService = new AgendamentoService();
 
@@ -161,16 +162,15 @@ export default function Agendamentos() {
     setSelectedDate(date);
   }, []);
 
-  const handleScheduleClick = useCallback(() => {
+  const handleScheduleClick = useCallback(async () => {
     setIsTimeModalOpen(true);
-  }, []);
-
-  const handleTimeToggle = useCallback((time: string) => {
-    setSelectedTimes((prev) =>
-      prev.includes(time)
-        ? prev.filter((t) => t !== time)
-        : [...prev, time].sort()
-    );
+    try {
+      const settings = new Settings();
+      const scheduleData = await settings.fetchSchedule();
+      setFetchedSchedule(scheduleData.schedule || []); // Use um array vazio se schedule for undefined
+    } catch (error) {
+      console.error("Erro ao buscar horários:", error);
+    }
   }, []);
 
   const handleTimesConfirm = useCallback(() => {
@@ -366,6 +366,14 @@ export default function Agendamentos() {
     []
   );
 
+  const handleTimeToggle = useCallback((time: string) => {
+    setSelectedTimes((prev) =>
+      prev.includes(time)
+        ? prev.filter((t) => t !== time)
+        : [...prev, time].sort()
+    );
+  }, []);
+
   return (
     <div
       className={`container mx-auto p-4 ${
@@ -534,8 +542,6 @@ export default function Agendamentos() {
 
       <Dialog open={isTimeModalOpen} onOpenChange={setIsTimeModalOpen}>
         <DialogContent className="max-w-md">
-          {" "}
-          {/* Ajuste da largura */}
           <DialogHeader>
             <DialogTitle>Selecione os horários</DialogTitle>
           </DialogHeader>
@@ -546,7 +552,10 @@ export default function Agendamentos() {
                   key={time}
                   variant={selectedTimes.includes(time) ? "default" : "outline"}
                   onClick={() => handleTimeToggle(time)}
-                  disabled={bookedTimeSlots.includes(time)}
+                  disabled={
+                    bookedTimeSlots.includes(time) ||
+                    fetchedSchedule.includes(time)
+                  }
                   className={bookedTimeSlots.includes(time) ? "opacity-50" : ""}
                 >
                   {time}
@@ -556,8 +565,6 @@ export default function Agendamentos() {
           </ScrollArea>
           <DialogFooter>
             <div className="flex justify-between gap-2">
-              {" "}
-              {/* Contêiner flexível para os botões */}
               <Button onClick={handleTimesConfirm}>Confirmar</Button>
             </div>
           </DialogFooter>
