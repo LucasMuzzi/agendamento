@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Table,
@@ -44,6 +45,7 @@ import { LoadingScreen } from "@/components/loading";
 import "./agendamentos.css";
 import { ClientFilterModal } from "@/components/clientFilterModal";
 import { ServiceType, Settings } from "@/app/api/services/settingsServices";
+import { useToast } from "@/hooks/use-toast";
 
 type Agendamento = {
   id: any;
@@ -59,6 +61,7 @@ export default function Agendamentos() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     new Date()
   );
+  const { toast } = useToast();
   const [isTimeModalOpen, setIsTimeModalOpen] = useState(false);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
@@ -156,6 +159,8 @@ export default function Agendamentos() {
 
   useEffect(() => {
     updateBookedTimeSlots();
+    console.log("Booked Time Slots:", bookedTimeSlots);
+    console.log("Fetched Schedule:", fetchedSchedule);
   }, [selectedDate, agendamentos, updateBookedTimeSlots]);
 
   const handleDateSelect = useCallback((date: Date | undefined) => {
@@ -167,7 +172,12 @@ export default function Agendamentos() {
     try {
       const settings = new Settings();
       const scheduleData = await settings.fetchSchedule();
-      setFetchedSchedule(scheduleData.schedule || []); // Use um array vazio se schedule for undefined
+
+      // Log para verificar a resposta da API
+      console.log("Schedule Data:", scheduleData);
+
+      // Armazena os horários corretamente
+      setFetchedSchedule(scheduleData.horarios || []); // Acessa diretamente o array de horários
     } catch (error) {
       console.error("Erro ao buscar horários:", error);
     }
@@ -184,7 +194,7 @@ export default function Agendamentos() {
     if (selectedDate && selectedTimes.length > 0 && nome && contato) {
       const userCookie = Cookies.get("info");
       if (!userCookie) {
-        console.error("User  cookie not found");
+        console.error("User cookie not found");
         return;
       }
 
@@ -201,6 +211,7 @@ export default function Agendamentos() {
       }));
 
       try {
+        setIsLoading(true);
         const agendamentosCriados = await Promise.all(
           novosAgendamentos.map((agendamento: any) =>
             agendamentoService.criarAgendamento(agendamento)
@@ -218,16 +229,33 @@ export default function Agendamentos() {
         setNome("");
         setContato("");
         setIsWhatsapp(false);
-        setTipoServico(serviceTypes.length > 0 ? serviceTypes[0].nome : ""); // Limpa para o primeiro tipo de serviço ou vazio se não houver
+        setTipoServico(serviceTypes.length > 0 ? serviceTypes[0].nome : "");
+
+        // Adicione o toaster de sucesso
+        toast({
+          title: "Agendamento criado",
+          description: "O agendamento foi criado com sucesso.",
+          className: "bg-green-500 text-white",
+          duration: 3000,
+        });
+
 
         // Recarregue a página
         setTimeout(() => {
           window.location.reload();
-        }, 500); // Ajuste o atraso conforme necessário
+        }, 500);
       } catch (error) {
         console.error("Erro ao gravar agendamento:", error);
+        // Adicione um toaster de erro
+        toast({
+          title: "Erro ao criar agendamento",
+          description:
+            "Ocorreu um erro ao criar o agendamento. Tente novamente.",
+          duration: 3000,
+          variant: "destructive",
+        });
       } finally {
-        setIsLoading(false); // Stop loading
+        setIsLoading(false);
       }
     }
   }, [
@@ -238,7 +266,8 @@ export default function Agendamentos() {
     isWhatsapp,
     tipoServico,
     agendamentoService,
-    serviceTypes, // Adicione serviceTypes como dependência
+    serviceTypes,
+    toast,
   ]);
 
   const handleEditAgendamento = useCallback(async () => {
@@ -251,7 +280,7 @@ export default function Agendamentos() {
     ) {
       const userCookie = Cookies.get("info");
       if (!userCookie) {
-        console.error("User  cookie not found");
+        console.error("User cookie not found");
         return;
       }
 
@@ -269,6 +298,7 @@ export default function Agendamentos() {
       }));
 
       try {
+        setIsLoading(true);
         await Promise.all(
           updatedAgendamentos.map((agendamento: any) =>
             agendamentoService.atualizarAgendamento(agendamento)
@@ -288,9 +318,26 @@ export default function Agendamentos() {
         setNome("");
         setContato("");
         setIsWhatsapp(false);
-        setTipoServico(serviceTypes.length > 0 ? serviceTypes[0].nome : ""); // Limpa para o primeiro tipo de serviço ou vazio se não houver
+        setTipoServico(serviceTypes.length > 0 ? serviceTypes[0].nome : "");
+
+        // Adicione o toaster de sucesso
+        toast({
+          title: "Agendamento atualizado",
+          description: "O agendamento foi atualizado com sucesso.",
+          className: "bg-green-500 text-white",
+          duration: 3000,
+        });
       } catch (error) {
         console.error("Erro ao atualizar agendamento:", error);
+        // Adicione um toaster de erro
+        toast({
+          title: "Erro ao atualizar agendamento",
+          description: "Ocorreu um erro ao atualizar o agendamento. Tente novamente.",
+          duration: 3000,
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
       }
     }
   }, [
@@ -302,8 +349,10 @@ export default function Agendamentos() {
     isWhatsapp,
     tipoServico,
     agendamentoService,
-    serviceTypes, // Adicione serviceTypes como dependência
+    serviceTypes,
+    toast,
   ]);
+
 
   const handleFormSubmit = useCallback(() => {
     if (selectedAgendamento) {
@@ -336,11 +385,14 @@ export default function Agendamentos() {
     [agendamentoService]
   );
 
-  const timeSlots = Array.from({ length: 25 }, (_, i) => {
-    const hour = Math.floor(i / 2) + 6;
-    const minute = i % 2 === 0 ? "00" : "30";
-    return `${hour.toString().padStart(2, "0")}:${minute}`;
-  });
+  // const timeSlots =
+  //   fetchedSchedule.length > 0
+  //     ? fetchedSchedule
+  //     : Array.from({ length: 25 }, (_, i) => {
+  //         const hour = Math.floor(i / 2) + 6;
+  //         const minute = i % 2 === 0 ? "00" : "30";
+  //         return `${hour.toString().padStart(2, "0")}:${minute}`;
+  //       });
 
   useEffect(() => {
     if (selectedAgendamento) {
@@ -547,14 +599,13 @@ export default function Agendamentos() {
           </DialogHeader>
           <ScrollArea className="h-[300px]">
             <div className="grid grid-cols-2 gap-2 mr-4">
-              {timeSlots.map((time) => (
+              {fetchedSchedule.map((time) => (
                 <Button
                   key={time}
                   variant={selectedTimes.includes(time) ? "default" : "outline"}
                   onClick={() => handleTimeToggle(time)}
                   disabled={
-                    bookedTimeSlots.includes(time) ||
-                    fetchedSchedule.includes(time)
+                    bookedTimeSlots.includes(time) // Se o horário já está reservado
                   }
                   className={bookedTimeSlots.includes(time) ? "opacity-50" : ""}
                 >
