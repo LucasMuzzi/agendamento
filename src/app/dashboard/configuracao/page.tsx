@@ -1,29 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Settings } from "@/app/api/services/settingsServices";
 import { useToast } from "@/hooks/use-toast";
+import { AxiosError } from "axios";
+import Image from "next/image";
 
 export default function Configuracoes() {
   const { toast } = useToast();
-  const [logoUrl, setLogoUrl] = useState("");
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [servicoNovo, setServicoNovo] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [interval, setInterval] = useState("");
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [isLogoSaved, setIsLogoSaved] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const settings = new Settings();
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLogoUrl(e.target.value);
-  };
-
-  const handleServicoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setServicoNovo(e.target.value);
+    const file = e.target.files?.[0];
+    if (file) {
+      setLogoFile(file);
+      setLogoPreview(URL.createObjectURL(file));
+      setIsLogoSaved(false);
+    }
   };
 
   const handleAddServico = async () => {
@@ -51,28 +57,42 @@ export default function Configuracoes() {
     }
   };
 
-  const handleTimeRangeSubmit = async () => {
-    if (startTime && endTime && interval) {
+  const handleUploadLogo = async () => {
+    if (logoFile) {
       try {
-        const response = await settings.createSchedule(
-          startTime,
-          endTime,
-          interval
-        );
-        console.log("Horário criado:", response);
+        const response = await settings.uploadFile(logoFile);
+        console.log("Logo enviado com sucesso:", response);
+        setIsLogoSaved(true);
+        toast({
+          title: "Sucesso",
+          description: "Logo enviado com sucesso",
+          duration: 3000,
+          className: "bg-green-500 text-white",
+        });
       } catch (error) {
-        console.error("Erro ao criar horário:", error);
-        throw error;
+        console.error(
+          "Erro ao enviar logo:",
+          (error as AxiosError)?.response?.data || error
+        );
+        toast({
+          title: "Erro",
+          description: "Falha ao enviar logo",
+          duration: 3000,
+          variant: "destructive",
+        });
       }
-    } else {
-      throw new Error("Todos os campos de horário devem ser preenchidos.");
     }
+  };
+
+  const handleServicoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setServicoNovo(e.target.value);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await handleTimeRangeSubmit();
+      await handleUploadLogo();
+      // Lógica adicional para salvar outras configurações pode ir aqui
       toast({
         title: "Sucesso",
         description: "Configurações salvas",
@@ -99,15 +119,32 @@ export default function Configuracoes() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="logo-url">URL do Logo</Label>
-              <div className="flex space-x-2">
-                <Input
-                  type="text"
-                  id="logo-url"
-                  value={logoUrl}
+              <Label htmlFor="logo-upload">Logo do Site</Label>
+              <div className="flex items-center space-x-4">
+                <Button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  Selecionar Logo
+                </Button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  id="logo-upload"
+                  accept="image/*"
                   onChange={handleLogoChange}
-                  placeholder="https://exemplo.com/seu-logo.png"
+                  className="hidden"
                 />
+                {logoPreview && !isLogoSaved && (
+                  <div className="relative w-16 h-16 border border-gray-300 rounded">
+                    <Image
+                      src={logoPreview}
+                      alt="Logo preview"
+                      layout="fill"
+                      objectFit="contain"
+                    />
+                  </div>
+                )}
               </div>
             </div>
             <div className="space-y-2">
@@ -168,3 +205,4 @@ export default function Configuracoes() {
     </div>
   );
 }
+

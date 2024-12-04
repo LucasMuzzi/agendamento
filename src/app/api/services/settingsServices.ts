@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { AxiosError } from "axios";
 import { apiAgend } from "../apiClient"; // Ajuste o caminho conforme necessário
 import Cookies from "js-cookie";
 
@@ -16,7 +17,6 @@ export class Settings {
 
   constructor() {}
 
-  // Método para obter o codUser a partir do cookie (somente no cliente)
   getCodUserFromCookie(): string | null {
     const cookieData = Cookies.get("info");
     if (cookieData) {
@@ -113,6 +113,33 @@ export class Settings {
     } catch (error) {
       console.error("Erro ao buscar horários:", error);
       throw error;
+    }
+  }
+
+  async uploadFile(file: File): Promise<any> {
+    if (!this.codUser) {
+      this.codUser = this.getCodUserFromCookie();
+      if (!this.codUser) {
+        throw new Error("CodUser não encontrado no cookie");
+      }
+    }
+
+    const formData = new FormData();
+    formData.append("logotipo", file);
+    formData.append("codUser", this.codUser);
+    try {
+      const response = await apiAgend.post("/api/upload-image", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    } catch (error: any) {
+      if (error.response) {
+      } else {
+        console.error("Erro ao configurar a solicitação:", error.message);
+      }
+      throw new Error("Erro ao fazer upload do arquivo.");
     }
   }
 }
