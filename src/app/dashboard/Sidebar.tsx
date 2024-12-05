@@ -34,6 +34,8 @@ export default function Sidebar({
   onMenuClick,
 }: SidebarProps) {
   const [logo, setLogo] = useState("/placeholder.svg?height=50&width=50");
+  const [error, setError] = useState("");
+
   const router = useRouter();
   const pathname = usePathname();
 
@@ -41,6 +43,7 @@ export default function Sidebar({
     const fetchLogo = async () => {
       try {
         const imageUrl = await settings.fetchImage();
+        console.log("URL da imagem:", imageUrl); 
         setLogo(imageUrl);
       } catch (error) {
         console.error("Erro ao buscar o logo:", error);

@@ -155,10 +155,16 @@ export class SettingsSerivce {
 
     try {
       const response = await apiAgend.post("/api/get-image", {
-        codUser: this.codUser,
+        codUser: this.codUser, 
       });
 
-      // Retorna a URL da imagem
+      console.log("Resposta da API:", response.data);
+
+  
+      if (!response.data || !response.data.logotipo) {
+        throw new Error("Logotipo não encontrado na resposta da API");
+      }
+
       return response.data.logotipo;
     } catch (error) {
       console.error("Erro ao buscar imagem:", error);
