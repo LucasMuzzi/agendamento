@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AxiosError } from "axios";
-import { apiAgend } from "../apiClient"; // Ajuste o caminho conforme necessário
+import { apiAgend } from "../apiClient"; 
 import Cookies from "js-cookie";
 
 interface CreateServiceTypeRequest {

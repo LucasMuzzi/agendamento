@@ -1,5 +1,5 @@
 import { apiAgend } from "../apiClient";
-import Cookies from "js-cookie"; // Importa a biblioteca para acessar cookies
+import Cookies from "js-cookie"; 
 
 interface RegisterRequest {
   name: string;

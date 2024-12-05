@@ -22,6 +22,7 @@ export interface AgendamentoResponse {
   isWhatsapp?: boolean;
   tipoServico: string;
 }
+
 export class AgendamentoService {
   async criarAgendamento(
     body: AgendamentoRequest
