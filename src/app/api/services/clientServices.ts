@@ -1,5 +1,5 @@
 import { apiAgend } from "../apiClient";
-import Cookies from "js-cookie"; 
+import Cookies from "js-cookie";
 
 interface RegisterRequest {
   name: string;
@@ -27,6 +27,16 @@ interface Client {
 
 interface GetClientsResponse {
   clients: Client[];
+}
+
+interface UpdateClientRequest {
+  name: string;
+  phone: string;
+  whatsapp: boolean;
+}
+
+interface DeleteClientResponse {
+  message: string;
 }
 
 export class clientService {
@@ -90,6 +100,65 @@ export class clientService {
       return response.data;
     } catch (error) {
       console.error("Erro ao buscar clientes:", error);
+      throw error;
+    }
+  }
+  async atualizarCliente(
+    id: string,
+    body: UpdateClientRequest
+  ): Promise<RegisterResponse> {
+    const cookieData = Cookies.get("info");
+
+    if (!cookieData) {
+      throw new Error("Cookie 'info' não encontrado");
+    }
+
+    const parsedData = JSON.parse(cookieData);
+    const { codUser } = parsedData;
+
+    if (!codUser) {
+      throw new Error("CodUser  não encontrado no cookie");
+    }
+
+    const requestBody = {
+      ...body,
+      codUser,
+    };
+
+    try {
+      const response = await apiAgend.post<RegisterResponse>(
+        `/api/update-client/${id}`,
+        requestBody
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao atualizar cliente:", error);
+      throw error;
+    }
+  }
+
+  async excluirCliente(id: string): Promise<DeleteClientResponse> {
+    const cookieData = Cookies.get("info");
+
+    if (!cookieData) {
+      throw new Error("Cookie 'info' não encontrado");
+    }
+
+    const parsedData = JSON.parse(cookieData);
+    const { codUser } = parsedData;
+
+    if (!codUser) {
+      throw new Error("CodUser  não encontrado no cookie");
+    }
+
+    try {
+      const response = await apiAgend.post<DeleteClientResponse>(
+        `/api/delete-client/${id}`,
+        { codUser }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao excluir cliente:", error);
       throw error;
     }
   }

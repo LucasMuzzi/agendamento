@@ -221,7 +221,18 @@ export default function Agendamentos() {
           )
         );
 
-        setAgendamentos((prev: any) => [...prev, ...agendamentosCriados]);
+        setAgendamentos((prev: Agendamento[]) => [
+          ...prev,
+          ...agendamentosCriados.map((agendamento: any) => ({
+            id: agendamento._id,
+            data: new Date(agendamento.data),
+            horarios: agendamento.horarios,
+            nome: agendamento.nome,
+            contato: agendamento.contato,
+            isWhatsapp: agendamento.isWhatsapp,
+            tipoServico: agendamento.tipoServico,
+          })),
+        ]);
 
         // Feche ambos os modais
         setIsFormModalOpen(false);
@@ -242,10 +253,8 @@ export default function Agendamentos() {
           duration: 3000,
         });
 
-        // Recarregue a página
-        setTimeout(() => {
-          window.location.reload();
-        }, 500);
+        // Atualize os horários reservados
+        updateBookedTimeSlots();
       } catch (error) {
         console.error("Erro ao gravar agendamento:", error);
         // Adicione um toaster de erro
@@ -270,6 +279,7 @@ export default function Agendamentos() {
     agendamentoService,
     serviceTypes,
     toast,
+    updateBookedTimeSlots,
   ]);
 
   const handleEditAgendamento = useCallback(async () => {
@@ -499,7 +509,6 @@ export default function Agendamentos() {
                   {!isMobile && <TableHead>Contato</TableHead>}
                   {!isMobile && <TableHead>Serviço</TableHead>}
                   <TableHead>WhatsApp</TableHead>
-                  {!isMobile && <TableHead>Ações</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -555,37 +564,6 @@ export default function Agendamentos() {
                           </a>
                         )}
                       </TableCell>
-                      {!isMobile && (
-                        <TableCell>
-                          <div className="flex space-x-2">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => {
-                                setIsDetailsModalOpen(false);
-                                setIsFormModalOpen(true);
-                              }}
-                            >
-                              <Edit className="h-4 w-4" />
-                              <span className="sr-only">Editar</span>
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeleteHorario(
-                                  agendamento.id,
-                                  agendamento.horario
-                                );
-                              }}
-                            >
-                              <Trash2 className="h-4 w-4 text-red-500" />
-                              <span className="sr-only">Deletar</span>
-                            </Button>
-                          </div>
-                        </TableCell>
-                      )}
                     </TableRow>
                   ))}
               </TableBody>
@@ -606,9 +584,7 @@ export default function Agendamentos() {
                   key={time}
                   variant={selectedTimes.includes(time) ? "default" : "outline"}
                   onClick={() => handleTimeToggle(time)}
-                  disabled={
-                    bookedTimeSlots.includes(time) // Se o horário já está reservado
-                  }
+                  disabled={bookedTimeSlots.includes(time)}
                   className={bookedTimeSlots.includes(time) ? "opacity-50" : ""}
                 >
                   {time}
@@ -689,18 +665,20 @@ export default function Agendamentos() {
               <Label htmlFor="tipoServico" className="text-right">
                 Serviço
               </Label>
-              <Select value={tipoServico} onValueChange={setTipoServico}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o tipo de serviço" />
-                </SelectTrigger>
-                <SelectContent>
-                  {serviceTypes.map((tipo) => (
-                    <SelectItem key={tipo._id} value={tipo.nome}>
-                      {tipo.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="col-span-3">
+                <Select value={tipoServico} onValueChange={setTipoServico}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecione o tipo de serviço" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {serviceTypes.map((tipo) => (
+                      <SelectItem key={tipo._id} value={tipo.nome}>
+                        {tipo.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
           <DialogFooter>

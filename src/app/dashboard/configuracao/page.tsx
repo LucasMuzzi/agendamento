@@ -99,7 +99,6 @@ export default function Configuracoes() {
       try {
         await handleUploadLogo();
         setIsLogoSaved(true);
-        window.location.reload();
         toast({
           title: "Sucesso",
           description: "Logo salvo com sucesso",
@@ -120,7 +119,6 @@ export default function Configuracoes() {
 
   const handleSaveOperatingHours = async () => {
     try {
-      // Chame a função createSchedule com os três argumentos
       await settings.createSchedule(startTime, endTime, interval);
       toast({
         title: "Sucesso",

@@ -23,6 +23,7 @@ import { PhoneIcon as WhatsappIcon, Edit, Trash2 } from "lucide-react";
 
 import { ClienteForm } from "@/components/clientForm";
 import { clientService } from "@/app/api/services/clientServices";
+import { useToast } from "@/hooks/use-toast";
 
 type Cliente = {
   id: string;
@@ -36,6 +37,7 @@ export default function Clientes() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentCliente, setCurrentCliente] = useState<Cliente | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const { toast } = useToast();
   const ClientService = new clientService();
 
   useEffect(() => {
@@ -71,7 +73,6 @@ export default function Clientes() {
 
   const handleSaveCliente = async (cliente: Omit<Cliente, "id">) => {
     try {
-      console.log("Cliente a ser salvo:", cliente); // Log antes da requisição
       const response = await ClientService.registrarCliente({
         name: cliente.nome,
         phone: cliente.contato,
@@ -81,24 +82,80 @@ export default function Clientes() {
       setClientes([...clientes, newCliente]);
       setIsModalOpen(false);
       setCurrentCliente(null);
+      toast({
+        title: "Sucesso",
+        description: "Novo cliente cadastrado",
+        duration: 3000,
+        className: "bg-green-500 text-white",
+      });
     } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Falha ao cadastrar cliente",
+        duration: 3000,
+        variant: "destructive",
+      });
       console.error("Erro ao adicionar cliente:", error);
     }
   };
 
   const handleEditCliente = async (cliente: Omit<Cliente, "id">) => {
     if (currentCliente) {
-      const updatedCliente = { ...currentCliente, ...cliente };
-      setClientes(
-        clientes.map((c) => (c.id === updatedCliente.id ? updatedCliente : c))
-      );
-      setIsModalOpen(false);
-      setCurrentCliente(null);
+      try {
+        const updatedCliente = { ...currentCliente, ...cliente };
+        const response = await ClientService.atualizarCliente(
+          currentCliente.id,
+          {
+            name: updatedCliente.nome,
+            phone: updatedCliente.contato,
+            whatsapp: updatedCliente.whatsapp,
+          }
+        );
+
+        setClientes((prevClientes) =>
+          prevClientes.map((c) =>
+            c.id === currentCliente.id ? { ...c, ...updatedCliente } : c
+          )
+        );
+        setIsModalOpen(false);
+        setCurrentCliente(null);
+        toast({
+          title: "Sucesso",
+          description: "Edição concluída",
+          duration: 3000,
+          className: "bg-green-500 text-white",
+        });
+      } catch (error) {
+        toast({
+          title: "Erro",
+          description: "Falha ao editar cliente",
+          duration: 3000,
+          variant: "destructive",
+        });
+        console.error("Erro ao atualizar cliente:", error);
+      }
     }
   };
 
-  const handleDeleteCliente = (id: string) => {
-    setClientes(clientes.filter((c) => c.id !== id));
+  const handleDeleteCliente = async (id: string) => {
+    try {
+      await ClientService.excluirCliente(id);
+      setClientes(clientes.filter((c) => c.id !== id));
+      toast({
+        title: "Sucesso",
+        description: "Cliente deletado",
+        duration: 3000,
+        className: "bg-green-500 text-white",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Falha ao deletar cliente",
+        duration: 3000,
+        variant: "destructive",
+      });
+      console.error("Erro ao excluir cliente:", error);
+    }
   };
 
   return (
