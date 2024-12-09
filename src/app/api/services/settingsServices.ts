@@ -167,4 +167,27 @@ export class SettingsSerivce {
       throw error;
     }
   }
+
+  async removeServiceType(id: string): Promise<any> {
+    if (!this.codUser) {
+      this.codUser = this.getCodUserFromCookie();
+      if (!this.codUser) {
+        throw new Error("CodUser  não encontrado no cookie");
+      }
+    }
+
+    try {
+      const response = await apiAgend.delete("/api/remove-service", {
+        data: {
+          id,
+          codUser: this.codUser,
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao remover tipo de serviço:", error);
+      throw error;
+    }
+  }
 }

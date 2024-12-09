@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,7 +11,10 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { SettingsSerivce } from "@/app/api/services/settingsServices";
+import {
+  ServiceType,
+  SettingsSerivce,
+} from "@/app/api/services/settingsServices";
 import { useToast } from "@/hooks/use-toast";
 import { AxiosError } from "axios";
 import Image from "next/image";
@@ -20,14 +23,16 @@ export default function Configuracoes() {
   const { toast } = useToast();
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [servicoNovo, setServicoNovo] = useState("");
+  const [servicoRemover, setServicoRemover] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [interval, setInterval] = useState("");
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [isLogoSaved, setIsLogoSaved] = useState(false);
+  const [serviceTypes, setServiceTypes] = useState<ServiceType[]>([]);
+  const [filteredServices, setFilteredServices] = useState([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const settings = new SettingsSerivce();
+  const [settings] = useState(new SettingsSerivce());
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -51,11 +56,55 @@ export default function Configuracoes() {
           duration: 3000,
           className: "bg-green-500 text-white",
         });
+        // Recarregar a página após adicionar o serviço
+        window.location.reload();
       } catch (error) {
         console.error("Erro ao adicionar serviço:", error);
         toast({
           title: "Erro",
           description: "Falha ao adicionar novo serviço",
+          duration: 3000,
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  const handleRemoveServico = async () => {
+    if (servicoRemover.trim() !== "") {
+      const serviceToRemove = serviceTypes.find(
+        (service) => service.nome === servicoRemover.trim()
+      );
+
+      if (serviceToRemove) {
+        try {
+          await settings.removeServiceType(serviceToRemove._id);
+          setServicoRemover("");
+          setFilteredServices([]);
+          setServiceTypes((prev) =>
+            prev.filter((type) => type._id !== serviceToRemove._id)
+          );
+          toast({
+            title: "Sucesso",
+            description: "Serviço removido com sucesso",
+            duration: 3000,
+            className: "bg-green-500 text-white",
+          });
+          // Recarregar a página após remover o serviço
+          window.location.reload();
+        } catch (error) {
+          console.error("Erro ao remover serviço:", error);
+          toast({
+            title: "Erro",
+            description: "Falha ao remover serviço",
+            duration: 3000,
+            variant: "destructive",
+          });
+        }
+      } else {
+        toast({
+          title: "Erro",
+          description: "Serviço não encontrado",
           duration: 3000,
           variant: "destructive",
         });
@@ -92,6 +141,22 @@ export default function Configuracoes() {
 
   const handleServicoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setServicoNovo(e.target.value);
+  };
+
+  const handleServicoRemoverChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = e.target.value;
+    setServicoRemover(value);
+
+    const filtered: any = serviceTypes.filter((service) =>
+      service.nome.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredServices(filtered);
+  };
+
+  const handleSelectService = (serviceName: string) => {
+    setServicoRemover(serviceName);
   };
 
   const handleSaveLogo = async () => {
@@ -136,6 +201,20 @@ export default function Configuracoes() {
       });
     }
   };
+
+  useEffect(() => {
+    const fetchServiceTypes = async () => {
+      try {
+        const types: any = await settings.fetchServiceTypes();
+        setServiceTypes(types);
+        setFilteredServices(types);
+      } catch (error) {
+        console.error("Erro ao buscar tipos de serviço:", error);
+      }
+    };
+
+    fetchServiceTypes();
+  }, [settings]);
 
   return (
     <div className="container mx-auto p-4 md:ml-7 py-20">
@@ -192,6 +271,34 @@ export default function Configuracoes() {
               <Button type="button" onClick={handleAddServico}>
                 Adicionar
               </Button>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="remover-servico">Remover Tipo de Serviço</Label>
+            <div className="flex space-x-2">
+              <Input
+                type="text"
+                id="remover-servico"
+                value={servicoRemover}
+                onChange={handleServicoRemoverChange}
+                placeholder="Nome do serviço a remover"
+              />
+              <Button type="button" onClick={handleRemoveServico}>
+                Remover
+              </Button>
+            </div>
+            <div className="mt-2 max-h-[150px] overflow-y-auto border rounded-md p-2">
+              <ul>
+                {filteredServices.map((service: any) => (
+                  <li
+                    key={service._id}
+                    onClick={() => handleSelectService(service.nome)}
+                    className="py-1 cursor-pointer hover:bg-gray-100 rounded px-2"
+                  >
+                    {service.nome}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
           <div className="space-y-4">
