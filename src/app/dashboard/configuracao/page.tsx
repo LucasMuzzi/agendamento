@@ -12,15 +12,24 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   ServiceType,
   SettingsSerivce,
 } from "@/app/api/services/settingsServices";
 import { useToast } from "@/hooks/use-toast";
 import { AxiosError } from "axios";
 import Image from "next/image";
+import { useTheme } from "next-themes";
 
 export default function Configuracoes() {
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [servicoNovo, setServicoNovo] = useState("");
   const [servicoRemover, setServicoRemover] = useState("");
@@ -68,7 +77,7 @@ export default function Configuracoes() {
           duration: 3000,
           className: "bg-green-500 text-white",
         });
-        // Recarregar a página após adicionar o serviço
+
         window.location.reload();
       } catch (error) {
         console.error("Erro ao adicionar serviço:", error);
@@ -102,7 +111,7 @@ export default function Configuracoes() {
             duration: 3000,
             className: "bg-green-500 text-white",
           });
-          // Recarregar a página após remover o serviço
+
           window.location.reload();
         } catch (error) {
           console.error("Erro ao remover serviço:", error);
@@ -214,6 +223,16 @@ export default function Configuracoes() {
     }
   };
 
+  const handleThemeChange = (value: string) => {
+    setTheme(value);
+    toast({
+      title: "Tema alterado",
+      description: `O tema foi alterado para ${value}`,
+      duration: 3000,
+      className: "bg-green-500 text-white",
+    });
+  };
+
   useEffect(() => {
     const fetchServiceTypes = async () => {
       try {
@@ -307,7 +326,7 @@ export default function Configuracoes() {
                   <li
                     key={service._id}
                     onClick={() => handleSelectService(service.nome)}
-                    className="py-1 cursor-pointer hover:bg-gray-100 rounded px-2"
+                    className="py-1 cursor-pointer hover:bg-accent hover:text-accent-foreground rounded px-2 transition-colors"
                   >
                     {service.nome}
                   </li>
@@ -353,6 +372,20 @@ export default function Configuracoes() {
             <Button onClick={handleSaveOperatingHours}>
               Salvar Horários de Funcionamento
             </Button>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="theme-select">Tema do Site</Label>
+            <Select onValueChange={handleThemeChange} defaultValue={theme}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Selecione um tema" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="light">Claro</SelectItem>
+                <SelectItem value="dark">Escuro</SelectItem>
+                <SelectItem value="system">Sistema</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>

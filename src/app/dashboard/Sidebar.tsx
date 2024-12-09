@@ -3,15 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import {
-  Users,
-  Settings,
-  LogOut,
-  Menu,
-  ChevronLeft,
-  ChevronRight,
-  Home,
-} from "lucide-react";
+import { Users, Settings, LogOut, Menu, ChevronLeft, ChevronRight, Home } from 'lucide-react';
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { LoginClass } from "../api/services/authServices";
@@ -27,19 +19,12 @@ interface SidebarProps {
   onMenuClick: () => void;
 }
 
-export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+export default function Sidebar({ isOpen, onToggle, isMobile, onMenuClick }: SidebarProps) {
   const [logo, setLogo] = useState("/placeholder.svg?height=50&width=50");
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    // Carregar o estado do menu do localStorage
-    const storedMenuState = localStorage.getItem("sidebarIsOpen");
-    if (storedMenuState) {
-      setIsOpen(storedMenuState === "true");
-    }
-
     const fetchLogo = async () => {
       try {
         const imageUrl = await settings.fetchImage();
@@ -52,15 +37,6 @@ export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
 
     fetchLogo();
   }, []);
-
-  const handleToggle = () => {
-    setIsOpen((prev) => {
-      const newState = !prev;
-      // Salvar o novo estado no localStorage
-      localStorage.setItem("sidebarIsOpen", newState.toString());
-      return newState;
-    });
-  };
 
   const handleLogout = async () => {
     try {
@@ -75,13 +51,13 @@ export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
     <>
       {isMobile && (
         <div
-          className="fixed top-0 left-0 w-full bg-white shadow-md z-50 h-12 flex items-center px-4"
+          className="fixed top-0 left-0 w-full bg-background text-foreground shadow-md z-50 h-12 flex items-center px-4"
           style={{ zIndex: 100 }}
         >
           <Button
             variant="ghost"
             size="icon"
-            onClick={handleToggle}
+            onClick={onToggle}
             className="p-2 rounded-full"
           >
             <Menu className="h-6 w-6" />
@@ -92,10 +68,10 @@ export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
       <aside
         className={`${
           isMobile
-            ? `fixed top-0 left-0 h-full z-40 bg-white shadow-md transition-transform duration-300 ${
+            ? `fixed top-0 left-0 h-full z-40 bg-background text-foreground border-r border-border shadow-md transition-transform duration-300 ${
                 isOpen ? "translate-x-0" : "-translate-x-full"
               } pb-16`
-            : "relative h-screen bg-white shadow-md"
+            : "relative h-screen bg-background text-foreground border-r border-border shadow-md"
         } flex flex-col ${isOpen ? "w-64" : "w-20"}`}
         style={isMobile ? { zIndex: 99, marginTop: "3rem" } : {}}
       >
@@ -105,7 +81,7 @@ export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
               isOpen ? "w-12 h-12" : "w-14 h-14"
             }`}
           >
-            <div className="relative w-full h-full overflow-hidden bg-gray-100 rounded-full">
+            <div className="relative w-full h-full overflow-hidden bg-muted rounded-full">
               <Image
                 src={logo}
                 alt="Logo"
@@ -118,7 +94,7 @@ export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
           <Button
             variant="ghost"
             size="icon"
-            onClick={handleToggle}
+            onClick={onToggle}
             className={`rounded-full p-2 mt-2 ${
               isOpen ? "absolute right-2 top-2" : ""
             }`}
@@ -169,14 +145,14 @@ export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
           </SidebarLink>
           <SidebarLink
             href="#"
-            icon={<LogOut className="w-5 h-5 text-red-600" />}
+            icon={<LogOut className="w-5 h-5 text-destructive" />}
             isActive={false}
             isExpanded={isOpen}
             onClick={() => {
               handleLogout();
               onMenuClick();
             }}
-            className="text-red-600 hover:text-red-800 hover:bg-red-100"
+            className="text-destructive hover:text-destructive hover:bg-destructive/10"
           >
             Logout
           </SidebarLink>
@@ -185,8 +161,8 @@ export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
 
       {isMobile && isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30"
-          onClick={handleToggle}
+          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-30"
+          onClick={onToggle}
         />
       )}
     </>
@@ -216,8 +192,8 @@ function SidebarLink({
       className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors
         ${
           isActive
-            ? "bg-gray-100 text-gray-900"
-            : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+            ? "bg-accent text-accent-foreground"
+            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
         }
         ${isExpanded ? "justify-start" : "justify-center"}
         ${className}`}
@@ -228,3 +204,4 @@ function SidebarLink({
     </Link>
   );
 }
+

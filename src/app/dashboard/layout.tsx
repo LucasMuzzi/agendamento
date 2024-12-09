@@ -2,12 +2,13 @@
 
 import { ReactNode, useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
-import { LoadingScreen } from "@/components/loading"; // Certifique-se de que o caminho esteja correto
+import { LoadingScreen } from "@/components/loading";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // Estado de carregamento
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -32,26 +33,32 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100 overflow-hidden ">
-      {isLoading && <LoadingScreen />}{" "}
-      {/* Mostra o loading se isLoading for true */}
-      <Sidebar
-        isOpen={isSidebarOpen}
-        onToggle={toggleSidebar}
-        isMobile={isMobile}
-        onMenuClick={handleMenuClick} // Passa a função de clique do menu
-      />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <main
-          className={`flex-1 overflow-auto transition-all duration-300 ease-in-out ${
-            isMobile && isSidebarOpen ? "opacity-50" : ""
-          }`}
-        >
-          <div className={`${isMobile ? "overflow-hidden" : ""}`}>
-            {children}
-          </div>
-        </main>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <div className="flex h-screen bg-background text-foreground overflow-hidden">
+        {isLoading && <LoadingScreen />}
+        <Sidebar
+          isOpen={isSidebarOpen}
+          onToggle={toggleSidebar}
+          isMobile={isMobile}
+          onMenuClick={handleMenuClick}
+        />
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <main
+            className={`flex-1 overflow-auto transition-all duration-300 ease-in-out ${
+              isMobile && isSidebarOpen ? "opacity-50" : ""
+            }`}
+          >
+            <div className={`${isMobile ? "overflow-hidden" : ""}`}>
+              {children}
+            </div>
+          </main>
+        </div>
       </div>
-    </div>
+    </ThemeProvider>
   );
 }
