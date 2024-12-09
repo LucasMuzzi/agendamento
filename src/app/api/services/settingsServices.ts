@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { apiAgend } from "../apiClient"; 
+import { apiAgend } from "../apiClient";
 import Cookies from "js-cookie";
 
 interface CreateServiceTypeRequest {
@@ -86,8 +86,6 @@ export class SettingsSerivce {
       codUser: this.codUser,
     };
 
-    console.log(requestBody);
-
     try {
       const response = await apiAgend.post("/api/create-schedule", requestBody);
       return response.data;
@@ -154,12 +152,11 @@ export class SettingsSerivce {
 
     try {
       const response = await apiAgend.post("/api/get-image", {
-        codUser: this.codUser, 
+        codUser: this.codUser,
       });
 
       console.log("Resposta da API:", response.data);
 
-  
       if (!response.data || !response.data.logotipo) {
         throw new Error("Logotipo não encontrado na resposta da API");
       }

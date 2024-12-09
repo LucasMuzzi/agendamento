@@ -43,7 +43,7 @@ export default function Sidebar({
     const fetchLogo = async () => {
       try {
         const imageUrl = await settings.fetchImage();
-        console.log("URL da imagem:", imageUrl); 
+        console.log("URL da imagem:", imageUrl);
         setLogo(imageUrl);
       } catch (error) {
         console.error("Erro ao buscar o logo:", error);
@@ -90,12 +90,12 @@ export default function Sidebar({
           isMobile
             ? `fixed top-0 left-0 h-full z-40 bg-white shadow-md transition-transform duration-300 ${
                 isOpen ? "translate-x-0" : "-translate-x-full"
-              }`
+              } pb-16`
             : "relative h-screen bg-white shadow-md"
         } flex flex-col ${isOpen ? "w-64" : "w-20"}`}
         style={isMobile ? { zIndex: 99, marginTop: "3rem" } : {}}
       >
-        <div className="p-4 flex flex-col items-center justify-center">
+        <div className="p-4 flex flex-col items-center justify-center relative">
           <div
             className={`flex items-center justify-center transition-all duration-300 ease-in-out ${
               isOpen ? "w-12 h-12" : "w-14 h-14"
@@ -115,7 +115,9 @@ export default function Sidebar({
             variant="ghost"
             size="icon"
             onClick={onToggle}
-            className="rounded-full p-2 mt-2"
+            className={`rounded-full p-2 mt-2 ${
+              isOpen ? "absolute right-2 top-2" : ""
+            }`}
           >
             {isOpen ? (
               <ChevronLeft className="h-4 w-4" />
@@ -124,7 +126,7 @@ export default function Sidebar({
             )}
           </Button>
         </div>
-        <nav className="flex-1 space-y-2 p-2">
+        <nav className="space-y-2 p-2">
           <SidebarLink
             href="/"
             icon={<Home className="w-5 h-5" />}
@@ -161,8 +163,21 @@ export default function Sidebar({
           >
             Configurações
           </SidebarLink>
+          <SidebarLink
+            href="#"
+            icon={<LogOut className="w-5 h-5 text-red-600" />}
+            isActive={false}
+            isExpanded={isOpen}
+            onClick={() => {
+              handleLogout();
+              handleMenuClick();
+            }}
+            className="text-red-600 hover:text-red-800 hover:bg-red-100"
+          >
+            Logout
+          </SidebarLink>
         </nav>
-        <div className="mt-auto p-4">
+        {/*<div className={`p-4 ${isMobile ? 'fixed bottom-0 left-0 w-full bg-white shadow-t' : 'mt-auto'}`}>
           <button
             onClick={() => {
               handleLogout();
@@ -170,16 +185,12 @@ export default function Sidebar({
             }}
             className={`flex items-center space-x-2 text-red-600 hover:text-red-800 transition-colors w-full
               ${isOpen ? "justify-start" : "justify-center"}
-              ${
-                isMobile && !isOpen
-                  ? "fixed bottom-4 left-4 bg-white p-2 rounded-full shadow-md"
-                  : ""
-              }`}
+              ${isMobile && !isOpen ? "justify-center" : ""}`}
           >
             <LogOut className="w-5 h-5" />
-            {isOpen && <span>Logout</span>}
+            {(isOpen || isMobile) && <span>Logout</span>}
           </button>
-        </div>
+        </div>*/}
       </aside>
 
       {isMobile && isOpen && (
@@ -199,6 +210,7 @@ function SidebarLink({
   isActive,
   isExpanded,
   onClick,
+  className = "",
 }: {
   href: string;
   icon: React.ReactNode;
@@ -206,6 +218,7 @@ function SidebarLink({
   isActive: boolean;
   isExpanded: boolean;
   onClick: () => void;
+  className?: string;
 }) {
   return (
     <Link
@@ -216,7 +229,8 @@ function SidebarLink({
             ? "bg-gray-100 text-gray-900"
             : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
         }
-        ${isExpanded ? "justify-start" : "justify-center"}`}
+        ${isExpanded ? "justify-start" : "justify-center"}
+        ${className}`}
       onClick={onClick}
     >
       {icon}

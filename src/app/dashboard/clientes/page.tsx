@@ -20,8 +20,8 @@ import {
 } from "@/components/ui/dialog";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { PhoneIcon as WhatsappIcon, Edit, Trash2 } from "lucide-react";
-
 import { ClienteForm } from "@/components/clientForm";
+import { ClienteDetalhesModal } from "@/components/ClienteDetalhesModal";
 import { clientService } from "@/app/api/services/clientServices";
 import { useToast } from "@/hooks/use-toast";
 
@@ -37,6 +37,7 @@ export default function Clientes() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentCliente, setCurrentCliente] = useState<Cliente | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const { toast } = useToast();
   const ClientService = new clientService();
 
@@ -69,7 +70,7 @@ export default function Clientes() {
     };
 
     fetchClientes();
-  }, []);
+  }, [ClientService]);
 
   const handleSaveCliente = async (cliente: Omit<Cliente, "id">) => {
     try {
@@ -158,6 +159,13 @@ export default function Clientes() {
     }
   };
 
+  const handleRowClick = (cliente: Cliente) => {
+    if (isMobile) {
+      setCurrentCliente(cliente);
+      setIsDetailsModalOpen(true);
+    }
+  };
+
   return (
     <div className={`container mx-auto p-4 ${isMobile ? "mt-12" : ""}`}>
       <Card
@@ -203,12 +211,16 @@ export default function Clientes() {
                   <TableHead>Nome</TableHead>
                   <TableHead>Contato</TableHead>
                   <TableHead>WhatsApp</TableHead>
-                  <TableHead>Ações</TableHead>
+                  {!isMobile && <TableHead>Ações</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {clientes.map((cliente) => (
-                  <TableRow key={cliente.id}>
+                  <TableRow
+                    key={cliente.id}
+                    onClick={() => handleRowClick(cliente)}
+                    className={isMobile ? "cursor-pointer" : ""}
+                  >
                     <TableCell>{cliente.nome}</TableCell>
                     <TableCell>{cliente.contato}</TableCell>
                     <TableCell>
@@ -218,6 +230,9 @@ export default function Clientes() {
                         }`}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={(e) => {
+                          if (isMobile) e.stopPropagation();
+                        }}
                       >
                         <Button
                           variant="ghost"
@@ -228,29 +243,31 @@ export default function Clientes() {
                         </Button>
                       </a>
                     </TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setCurrentCliente(cliente);
-                            setIsModalOpen(true);
-                          }}
-                        >
-                          <Edit className="h-4 w-4" />
-                          <span className="sr-only">Editar</span>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteCliente(cliente.id)}
-                        >
-                          <Trash2 className="h-4 w-4 text-red-500" />
-                          <span className="sr-only">Deletar</span>
-                        </Button>
-                      </div>
-                    </TableCell>
+                    {!isMobile && (
+                      <TableCell>
+                        <div className="flex space-x-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setCurrentCliente(cliente);
+                              setIsModalOpen(true);
+                            }}
+                          >
+                            <Edit className="h-4 w-4" />
+                            <span className="sr-only">Editar</span>
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteCliente(cliente.id)}
+                          >
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                            <span className="sr-only">Deletar</span>
+                          </Button>
+                        </div>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>
@@ -258,6 +275,22 @@ export default function Clientes() {
           </div>
         </CardContent>
       </Card>
+
+      <ClienteDetalhesModal
+        cliente={currentCliente}
+        isOpen={isDetailsModalOpen}
+        onOpenChange={setIsDetailsModalOpen}
+        onEdit={() => {
+          setIsModalOpen(true);
+          setIsDetailsModalOpen(false);
+        }}
+        onDelete={() => {
+          if (currentCliente) {
+            handleDeleteCliente(currentCliente.id);
+            setIsDetailsModalOpen(false);
+          }
+        }}
+      />
     </div>
   );
 }
