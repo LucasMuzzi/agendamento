@@ -27,19 +27,19 @@ interface SidebarProps {
   onMenuClick: () => void;
 }
 
-export default function Sidebar({
-  isOpen,
-  onToggle,
-  isMobile,
-  onMenuClick,
-}: SidebarProps) {
+export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [logo, setLogo] = useState("/placeholder.svg?height=50&width=50");
-  const [error, setError] = useState("");
-
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
+    // Carregar o estado do menu do localStorage
+    const storedMenuState = localStorage.getItem("sidebarIsOpen");
+    if (storedMenuState) {
+      setIsOpen(storedMenuState === "true");
+    }
+
     const fetchLogo = async () => {
       try {
         const imageUrl = await settings.fetchImage();
@@ -53,6 +53,15 @@ export default function Sidebar({
     fetchLogo();
   }, []);
 
+  const handleToggle = () => {
+    setIsOpen((prev) => {
+      const newState = !prev;
+      // Salvar o novo estado no localStorage
+      localStorage.setItem("sidebarIsOpen", newState.toString());
+      return newState;
+    });
+  };
+
   const handleLogout = async () => {
     try {
       await loginClass.logout();
@@ -60,11 +69,6 @@ export default function Sidebar({
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
     }
-  };
-
-  const handleMenuClick = () => {
-    if (isMobile) onToggle();
-    onMenuClick();
   };
 
   return (
@@ -77,7 +81,7 @@ export default function Sidebar({
           <Button
             variant="ghost"
             size="icon"
-            onClick={onToggle}
+            onClick={handleToggle}
             className="p-2 rounded-full"
           >
             <Menu className="h-6 w-6" />
@@ -114,7 +118,7 @@ export default function Sidebar({
           <Button
             variant="ghost"
             size="icon"
-            onClick={onToggle}
+            onClick={handleToggle}
             className={`rounded-full p-2 mt-2 ${
               isOpen ? "absolute right-2 top-2" : ""
             }`}
@@ -132,7 +136,7 @@ export default function Sidebar({
             icon={<Home className="w-5 h-5" />}
             isActive={pathname === "/"}
             isExpanded={isOpen}
-            onClick={handleMenuClick}
+            onClick={onMenuClick}
           >
             Pagina inicial
           </SidebarLink>
@@ -141,7 +145,7 @@ export default function Sidebar({
             icon={<Menu className="w-5 h-5" />}
             isActive={pathname === "/dashboard/agendamentos"}
             isExpanded={isOpen}
-            onClick={handleMenuClick}
+            onClick={onMenuClick}
           >
             Agendamentos
           </SidebarLink>
@@ -150,7 +154,7 @@ export default function Sidebar({
             icon={<Users className="w-5 h-5" />}
             isActive={pathname === "/dashboard/clientes"}
             isExpanded={isOpen}
-            onClick={handleMenuClick}
+            onClick={onMenuClick}
           >
             Cadastro de Clientes
           </SidebarLink>
@@ -159,7 +163,7 @@ export default function Sidebar({
             icon={<Settings className="w-5 h-5" />}
             isActive={pathname === "/dashboard/configuracao"}
             isExpanded={isOpen}
-            onClick={handleMenuClick}
+            onClick={onMenuClick}
           >
             Configurações
           </SidebarLink>
@@ -170,33 +174,19 @@ export default function Sidebar({
             isExpanded={isOpen}
             onClick={() => {
               handleLogout();
-              handleMenuClick();
+              onMenuClick();
             }}
             className="text-red-600 hover:text-red-800 hover:bg-red-100"
           >
             Logout
           </SidebarLink>
         </nav>
-        {/*<div className={`p-4 ${isMobile ? 'fixed bottom-0 left-0 w-full bg-white shadow-t' : 'mt-auto'}`}>
-          <button
-            onClick={() => {
-              handleLogout();
-              handleMenuClick();
-            }}
-            className={`flex items-center space-x-2 text-red-600 hover:text-red-800 transition-colors w-full
-              ${isOpen ? "justify-start" : "justify-center"}
-              ${isMobile && !isOpen ? "justify-center" : ""}`}
-          >
-            <LogOut className="w-5 h-5" />
-            {(isOpen || isMobile) && <span>Logout</span>}
-          </button>
-        </div>*/}
       </aside>
 
       {isMobile && isOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-30"
-          onClick={onToggle}
+          onClick={handleToggle}
         />
       )}
     </>

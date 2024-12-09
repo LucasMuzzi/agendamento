@@ -31,8 +31,20 @@ export default function Configuracoes() {
   const [isLogoSaved, setIsLogoSaved] = useState(false);
   const [serviceTypes, setServiceTypes] = useState<ServiceType[]>([]);
   const [filteredServices, setFilteredServices] = useState([]);
+  const [isMobile, setIsMobile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [settings] = useState(new SettingsSerivce());
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -217,8 +229,10 @@ export default function Configuracoes() {
   }, [settings]);
 
   return (
-    <div className="container mx-auto p-4 md:ml-7 py-20">
-      <Card className="max-w-2xl">
+    <div className={`container mx-auto p-4 ${isMobile ? "mt-12" : ""}`}>
+      <Card
+        className={`${isMobile ? "w-full" : "w-full max-w-[800px]"} mx-auto`}
+      >
         <CardHeader>
           <CardTitle>Configurações do Site</CardTitle>
         </CardHeader>
