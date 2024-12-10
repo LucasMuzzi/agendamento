@@ -176,11 +176,9 @@ export default function Agendamentos() {
       const settings = new SettingsSerivce();
       const scheduleData = await settings.fetchSchedule();
 
-      // Log para verificar a resposta da API
       console.log("Schedule Data:", scheduleData);
 
-      // Armazena os horários corretamente
-      setFetchedSchedule(scheduleData.horarios || []); // Acessa diretamente o array de horários
+      setFetchedSchedule(scheduleData.horarios || []);
     } catch (error) {
       console.error("Erro ao buscar horários:", error);
     }
@@ -397,15 +395,6 @@ export default function Agendamentos() {
     [agendamentoService]
   );
 
-  // const timeSlots =
-  //   fetchedSchedule.length > 0
-  //     ? fetchedSchedule
-  //     : Array.from({ length: 25 }, (_, i) => {
-  //         const hour = Math.floor(i / 2) + 6;
-  //         const minute = i % 2 === 0 ? "00" : "30";
-  //         return `${hour.toString().padStart(2, "0")}:${minute}`;
-  //       });
-
   useEffect(() => {
     if (selectedAgendamento) {
       setNome(selectedAgendamento.nome);
@@ -419,12 +408,10 @@ export default function Agendamentos() {
 
   const handleClientSelect = useCallback(
     (client: { whatsapp: boolean; name: string; phone: string }) => {
-      // Atualiza os estados com os dados do cliente selecionado
-      setNome(client.name || ""); // Use 'name' em vez de 'nome'
-      setContato(client.phone || ""); // Use 'phone' em vez de 'contato'
-      setIsWhatsapp(client.whatsapp); // Mantenha 'whatsapp' como está
+      setNome(client.name || "");
+      setContato(client.phone || "");
+      setIsWhatsapp(client.whatsapp);
 
-      // Fecha o modal de seleção de cliente
       setIsClientFilterModalOpen(false);
     },
     []
@@ -449,7 +436,6 @@ export default function Agendamentos() {
         !isFormModalOpen &&
         !isDetailsModalOpen && <LoadingScreen />}
       <div className="flex flex-col lg:flex-row gap-2 items-start relative z-10">
-        {/* Calendário */}
         <Card className={`calendar-card flex-shrink-0`}>
           <CardHeader className="py-2">
             <CardTitle className="text-lg">Calendário</CardTitle>
@@ -462,7 +448,7 @@ export default function Agendamentos() {
               onSelect={handleDateSelect}
               className={`rounded-md border shadow-sm calendar ${
                 isMobile ? "" : "pl-8"
-              }`} // Adicione a classe "calendar"
+              }`}
               disabled={(date) =>
                 date < new Date(new Date().setHours(0, 0, 0, 0))
               }

@@ -82,6 +82,7 @@ export default function LoginPage() {
   };
 
   return (
+    
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <Card className="w-[350px] shadow-lg">
         <CardHeader className="space-y-1">

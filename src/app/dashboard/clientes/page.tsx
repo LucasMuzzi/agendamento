@@ -221,7 +221,9 @@ export default function Clientes() {
                     onClick={() => handleRowClick(cliente)}
                     className={isMobile ? "cursor-pointer" : ""}
                   >
-                    <TableCell>{cliente.nome}</TableCell>
+                    <TableCell>
+                      {isMobile ? cliente.nome.split(" ")[0] : cliente.nome}
+                    </TableCell>
                     <TableCell>{cliente.contato}</TableCell>
                     <TableCell>
                       <a
@@ -238,6 +240,7 @@ export default function Clientes() {
                           variant="ghost"
                           size="icon"
                           disabled={!cliente.whatsapp}
+                          className="ml-5"
                         >
                           <WhatsappIcon className="h-5 w-5 text-green-500" />
                         </Button>
