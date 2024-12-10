@@ -62,22 +62,21 @@ export default function Sidebar({
 
   return (
     <>
-      {isMobile &&
-        !isOpen && ( 
-          <div
-            className="fixed top-0 left-0 w-full bg-background text-foreground shadow-md z-50 h-12 flex items-center px-4"
-            style={{ zIndex: 100 }}
+      {isMobile && !isOpen && (
+        <div
+          className="fixed top-0 left-0 w-full bg-background text-foreground shadow-md z-50 h-12 flex items-center px-4"
+          style={{ zIndex: 100 }}
+        >
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onToggle}
+            className="p-2 rounded-full"
           >
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onToggle}
-              className="p-2 rounded-full"
-            >
-              <Menu className="h-6 w-6" />
-            </Button>
-          </div>
-        )}
+            <Menu className="h-6 w-6" />
+          </Button>
+        </div>
+      )}
 
       <aside
         className={`${
@@ -126,7 +125,10 @@ export default function Sidebar({
             icon={<Home className="w-5 h-5" />}
             isActive={pathname === "/"}
             isExpanded={isOpen}
-            onClick={onMenuClick}
+            onClick={() => {
+              onMenuClick();
+              if (isMobile) onToggle(); // Fecha o menu se estiver em mobile
+            }}
           >
             Pagina inicial
           </SidebarLink>
@@ -135,7 +137,10 @@ export default function Sidebar({
             icon={<Menu className="w-5 h-5" />}
             isActive={pathname === "/dashboard/agendamentos"}
             isExpanded={isOpen}
-            onClick={onMenuClick}
+            onClick={() => {
+              onMenuClick();
+              if (isMobile) onToggle(); 
+            }}
           >
             Agendamentos
           </SidebarLink>
@@ -144,7 +149,10 @@ export default function Sidebar({
             icon={<Users className="w-5 h-5" />}
             isActive={pathname === "/dashboard/clientes"}
             isExpanded={isOpen}
-            onClick={onMenuClick}
+            onClick={() => {
+              onMenuClick();
+              if (isMobile) onToggle();
+            }}
           >
             Cadastro de Clientes
           </SidebarLink>
@@ -153,7 +161,10 @@ export default function Sidebar({
             icon={<Settings className="w-5 h-5" />}
             isActive={pathname === "/dashboard/configuracao"}
             isExpanded={isOpen}
-            onClick={onMenuClick}
+            onClick={() => {
+              onMenuClick();
+              if (isMobile) onToggle();
+            }}
           >
             Configurações
           </SidebarLink>
@@ -165,6 +176,7 @@ export default function Sidebar({
             onClick={() => {
               handleLogout();
               onMenuClick();
+              if (isMobile) onToggle();
             }}
             className="text-destructive hover:text-destructive hover:bg-destructive/10"
           >

@@ -40,7 +40,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       disableTransitionOnChange
     >
       <div className="flex h-screen bg-background text-foreground overflow-hidden">
-        {isLoading && <LoadingScreen />}
         <Sidebar
           isOpen={isSidebarOpen}
           onToggle={toggleSidebar}
