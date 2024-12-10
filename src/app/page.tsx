@@ -14,7 +14,7 @@ export default function Home() {
     const token = Cookies.get("info");
     if (token) {
       setIsLoggedIn(true);
-      router.push("/dashboard");
+      router.push("/dashboard/home");
     } else {
       setIsLoading(false);
     }

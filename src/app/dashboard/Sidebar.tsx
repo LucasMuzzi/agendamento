@@ -54,7 +54,7 @@ export default function Sidebar({
   const handleLogout = async () => {
     try {
       await loginClass.logout();
-      router.push("/login/auth");
+      window.location.href = "/login/auth";
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
     }
@@ -121,13 +121,13 @@ export default function Sidebar({
         </div>
         <nav className="space-y-2 p-2">
           <SidebarLink
-            href="/"
+            href="/dashboard/home"
             icon={<Home className="w-5 h-5" />}
-            isActive={pathname === "/"}
+            isActive={pathname === "/dashboard/home"}
             isExpanded={isOpen}
             onClick={() => {
               onMenuClick();
-              if (isMobile) onToggle(); // Fecha o menu se estiver em mobile
+              if (isMobile) onToggle();
             }}
           >
             Pagina inicial
@@ -139,7 +139,7 @@ export default function Sidebar({
             isExpanded={isOpen}
             onClick={() => {
               onMenuClick();
-              if (isMobile) onToggle(); 
+              if (isMobile) onToggle();
             }}
           >
             Agendamentos

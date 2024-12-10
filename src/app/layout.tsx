@@ -35,17 +35,10 @@ export default function RootLayout({
           geistMono.variable
         )}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <div className="relative flex min-h-screen flex-col">
-            <div className="flex-1">{children}</div>
-            <Toaster />
-          </div>
-        </ThemeProvider>
+        <div className="relative flex min-h-screen flex-col">
+          <div className="flex-1">{children}</div>
+          <Toaster />
+        </div>
       </body>
     </html>
   );
