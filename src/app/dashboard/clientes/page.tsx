@@ -19,7 +19,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { PhoneIcon as WhatsappIcon, Edit, Trash2 } from "lucide-react";
+import { PhoneIcon as WhatsappIcon, Edit, Trash2, X } from "lucide-react";
 import { ClienteForm } from "@/components/clientForm";
 import { ClienteDetalhesModal } from "@/components/ClienteDetalhesModal";
 import { clientService } from "@/app/api/services/clientServices";
@@ -79,6 +79,8 @@ export default function Clientes() {
         phone: cliente.contato,
         whatsapp: cliente.whatsapp,
       });
+
+      console.log(response);
       const newCliente = { ...cliente, id: response.client._id };
       setClientes([...clientes, newCliente]);
       setIsModalOpen(false);
@@ -104,14 +106,11 @@ export default function Clientes() {
     if (currentCliente) {
       try {
         const updatedCliente = { ...currentCliente, ...cliente };
-        const response = await ClientService.atualizarCliente(
-          currentCliente.id,
-          {
-            name: updatedCliente.nome,
-            phone: updatedCliente.contato,
-            whatsapp: updatedCliente.whatsapp,
-          }
-        );
+        await ClientService.atualizarCliente(currentCliente.id, {
+          name: updatedCliente.nome,
+          phone: updatedCliente.contato,
+          whatsapp: updatedCliente.whatsapp,
+        });
 
         setClientes((prevClientes) =>
           prevClientes.map((c) =>
@@ -226,25 +225,29 @@ export default function Clientes() {
                     </TableCell>
                     <TableCell>{cliente.contato}</TableCell>
                     <TableCell>
-                      <a
-                        href={`https://wa.me/${
-                          cliente.whatsapp ? cliente.contato : ""
-                        }`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => {
-                          if (isMobile) e.stopPropagation();
-                        }}
-                      >
+                      {cliente.whatsapp ? (
+                        <a
+                          href={`https://wa.me/${cliente.contato}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => {
+                            if (isMobile) e.stopPropagation();
+                          }}
+                        >
+                          <Button variant="ghost" size="icon" className="ml-5">
+                            <WhatsappIcon className="h-5 w-5 text-green-500" />
+                          </Button>
+                        </a>
+                      ) : (
                         <Button
                           variant="ghost"
                           size="icon"
-                          disabled={!cliente.whatsapp}
                           className="ml-5"
+                          disabled
                         >
-                          <WhatsappIcon className="h-5 w-5 text-green-500" />
+                          <X className="h-5 w-5 text-red-500" />
                         </Button>
-                      </a>
+                      )}
                     </TableCell>
                     {!isMobile && (
                       <TableCell>
