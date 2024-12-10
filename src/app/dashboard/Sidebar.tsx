@@ -3,7 +3,15 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { Users, Settings, LogOut, Menu, ChevronLeft, ChevronRight, Home } from 'lucide-react';
+import {
+  Users,
+  Settings,
+  LogOut,
+  Menu,
+  ChevronLeft,
+  ChevronRight,
+  Home,
+} from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { LoginClass } from "../api/services/authServices";
@@ -19,7 +27,12 @@ interface SidebarProps {
   onMenuClick: () => void;
 }
 
-export default function Sidebar({ isOpen, onToggle, isMobile, onMenuClick }: SidebarProps) {
+export default function Sidebar({
+  isOpen,
+  onToggle,
+  isMobile,
+  onMenuClick,
+}: SidebarProps) {
   const [logo, setLogo] = useState("/placeholder.svg?height=50&width=50");
   const router = useRouter();
   const pathname = usePathname();
@@ -49,21 +62,22 @@ export default function Sidebar({ isOpen, onToggle, isMobile, onMenuClick }: Sid
 
   return (
     <>
-      {isMobile && (
-        <div
-          className="fixed top-0 left-0 w-full bg-background text-foreground shadow-md z-50 h-12 flex items-center px-4"
-          style={{ zIndex: 100 }}
-        >
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onToggle}
-            className="p-2 rounded-full"
+      {isMobile &&
+        !isOpen && ( 
+          <div
+            className="fixed top-0 left-0 w-full bg-background text-foreground shadow-md z-50 h-12 flex items-center px-4"
+            style={{ zIndex: 100 }}
           >
-            <Menu className="h-6 w-6" />
-          </Button>
-        </div>
-      )}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onToggle}
+              className="p-2 rounded-full"
+            >
+              <Menu className="h-6 w-6" />
+            </Button>
+          </div>
+        )}
 
       <aside
         className={`${
@@ -204,4 +218,3 @@ function SidebarLink({
     </Link>
   );
 }
-
