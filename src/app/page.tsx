@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import LoginPage from "./login/auth/page";
 import Cookies from "js-cookie";
+import { LoadingScreen } from "@/components/loading";
 
 export default function Home() {
   const router = useRouter();
@@ -20,9 +21,13 @@ export default function Home() {
     }
   }, [router]);
 
-  if (isLoggedIn) {
-    return null;
+  if (isLoading) {
+    return <LoadingScreen />;
   }
 
-  return <LoginPage />;
+  if (!isLoggedIn) {
+    return <LoginPage />;
+  }
+
+  return null;
 }

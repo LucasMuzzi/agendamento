@@ -58,7 +58,7 @@ export default function LoginPage() {
       };
 
       Cookies.set("info", JSON.stringify(responseBody), { expires: 1 });
-      router.push("/dashboard");
+      router.push("/dashboard/home");
     } catch (err: unknown) {
       console.error("Erro ao fazer login:", err);
 
@@ -82,7 +82,6 @@ export default function LoginPage() {
   };
 
   return (
-    
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <Card className="w-[350px] shadow-lg">
         <CardHeader className="space-y-1">

@@ -3,15 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import {
-  Users,
-  Settings,
-  LogOut,
-  Menu,
-  ChevronLeft,
-  ChevronRight,
-  Home,
-} from "lucide-react";
+import { Users, Settings, LogOut, Menu, ChevronLeft, ChevronRight, Home } from 'lucide-react';
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { LoginClass } from "../api/services/authServices";
@@ -21,23 +13,23 @@ const loginClass = new LoginClass();
 const settings = new SettingsSerivce();
 
 interface SidebarProps {
-  isOpen: boolean;
-  onToggle: () => void;
   isMobile: boolean;
   onMenuClick: () => void;
 }
 
-export default function Sidebar({
-  isOpen,
-  onToggle,
-  isMobile,
-  onMenuClick,
-}: SidebarProps) {
+export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
+  const [isOpen, setIsOpen] = useState(false);
   const [logo, setLogo] = useState("/placeholder.svg?height=50&width=50");
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
+    // Ler o estado do localStorage ao montar o componente
+    const storedState = localStorage.getItem("sidebarOpen");
+    if (storedState) {
+      setIsOpen(JSON.parse(storedState));
+    }
+
     const fetchLogo = async () => {
       try {
         const imageUrl = await settings.fetchImage();
@@ -51,6 +43,15 @@ export default function Sidebar({
     fetchLogo();
   }, []);
 
+  const handleToggle = () => {
+    setIsOpen((prev) => {
+      const newState = !prev;
+      // Salvar o novo estado no localStorage
+      localStorage.setItem("sidebarOpen", JSON.stringify(newState));
+      return newState;
+    });
+  };
+
   const handleLogout = async () => {
     try {
       await loginClass.logout();
@@ -63,19 +64,14 @@ export default function Sidebar({
   return (
     <>
       {isMobile && !isOpen && (
-        <div
-          className="fixed top-0 left-0 w-full bg-background text-foreground shadow-md z-50 h-12 flex items-center px-4"
-          style={{ zIndex: 100 }}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleToggle}
+          className="fixed top-4 left-4 z-50 p-2 rounded-full bg-background shadow-md"
         >
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onToggle}
-            className="p-2 rounded-full"
-          >
-            <Menu className="h-6 w-6" />
-          </Button>
-        </div>
+          <Menu className="h-6 w-6" />
+        </Button>
       )}
 
       <aside
@@ -91,7 +87,7 @@ export default function Sidebar({
         <div className="p-4 flex flex-col items-center justify-center relative">
           <div
             className={`flex items-center justify-center transition-all duration-300 ease-in-out ${
-              isOpen ? "w-12 h-12" : "w-14 h-14"
+              isOpen ? "w-12 h-12" : "w-10 h-10"
             }`}
           >
             <div className="relative w-full h-full overflow-hidden bg-muted rounded-full">
@@ -104,20 +100,22 @@ export default function Sidebar({
               />
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onToggle}
-            className={`rounded-full p-2 mt-2 ${
-              isOpen ? "absolute right-2 top-2" : ""
-            }`}
-          >
-            {isOpen ? (
-              <ChevronLeft className="h-4 w-4" />
-            ) : (
-              <ChevronRight className="h-4 w-4" />
-            )}
-          </Button>
+          {!isMobile && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleToggle}
+              className={`absolute top-4 right-0 z-10 h-8 w-8 rounded-full border border-border bg-background p-0 hover:bg-accent hover:text-accent-foreground ${
+                isOpen ? "-right-4" : "-right-4"
+              }`}
+            >
+              {isOpen ? (
+                <ChevronLeft className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </Button>
+          )}
         </div>
         <nav className="space-y-2 p-2">
           <SidebarLink
@@ -127,10 +125,10 @@ export default function Sidebar({
             isExpanded={isOpen}
             onClick={() => {
               onMenuClick();
-              if (isMobile) onToggle();
+              if (isMobile) handleToggle();
             }}
           >
-            Pagina inicial
+            Página inicial
           </SidebarLink>
           <SidebarLink
             href="/dashboard/agendamentos"
@@ -139,7 +137,7 @@ export default function Sidebar({
             isExpanded={isOpen}
             onClick={() => {
               onMenuClick();
-              if (isMobile) onToggle();
+              if (isMobile) handleToggle();
             }}
           >
             Agendamentos
@@ -151,7 +149,7 @@ export default function Sidebar({
             isExpanded={isOpen}
             onClick={() => {
               onMenuClick();
-              if (isMobile) onToggle();
+              if (isMobile) handleToggle();
             }}
           >
             Cadastro de Clientes
@@ -163,7 +161,7 @@ export default function Sidebar({
             isExpanded={isOpen}
             onClick={() => {
               onMenuClick();
-              if (isMobile) onToggle();
+              if (isMobile) handleToggle();
             }}
           >
             Configurações
@@ -176,7 +174,7 @@ export default function Sidebar({
             onClick={() => {
               handleLogout();
               onMenuClick();
-              if (isMobile) onToggle();
+              if (isMobile) handleToggle();
             }}
             className="text-destructive hover:text-destructive hover:bg-destructive/10"
           >
@@ -188,7 +186,8 @@ export default function Sidebar({
       {isMobile && isOpen && (
         <div
           className="fixed inset-0 bg-background/80 backdrop-blur-sm z-30"
-          onClick={onToggle}
+          onClick={handleToggle}
+          style={{ zIndex: 98 }}
         />
       )}
     </>
@@ -230,3 +229,4 @@ function SidebarLink({
     </Link>
   );
 }
+
