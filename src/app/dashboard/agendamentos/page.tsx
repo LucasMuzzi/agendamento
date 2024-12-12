@@ -222,7 +222,6 @@ export default function Agendamentos() {
         setIsFormModalOpen(false);
         setIsTimeModalOpen(false);
 
-        // Limpa os campos do formulário
         setSelectedTimes([]);
         setNome("");
         setContato("");
@@ -273,32 +272,35 @@ export default function Agendamentos() {
     ) {
       const userCookie = Cookies.get("info");
       if (!userCookie) {
-        console.error("User cookie not found");
+        console.error("User  cookie not found");
         return;
       }
 
       const user = JSON.parse(userCookie);
 
-      const updatedAgendamentos = selectedTimes.map((time) => ({
+      const updatedAgendamento = {
         id: selectedAgendamento.id,
         userId: user.codUser,
         data: selectedDate.toISOString(),
-        horarios: [time],
+        horarios: selectedTimes, // Use selectedTimes diretamente
         nome,
         contato,
         isWhatsapp,
         tipoServico,
-      }));
+      };
 
       try {
         setIsLoading(true);
-        await Promise.all(
-          updatedAgendamentos.map((agendamento: any) =>
-            agendamentoService.atualizarAgendamento(agendamento)
+
+        await agendamentoService.atualizarAgendamento(updatedAgendamento);
+
+        setAgendamentos((prev: any) =>
+          prev.map((agendamento: any) =>
+            agendamento.id === selectedAgendamento.id
+              ? updatedAgendamento
+              : agendamento
           )
         );
-
-        setAgendamentos((prev: any) => [...prev, updatedAgendamentos]);
 
         setIsFormModalOpen(false);
         setSelectedTimes([]);
@@ -307,7 +309,6 @@ export default function Agendamentos() {
         setIsWhatsapp(false);
         setTipoServico(serviceTypes.length > 0 ? serviceTypes[0].nome : "");
 
-        // Adicione o toaster de sucesso
         toast({
           title: "Agendamento atualizado",
           description: "O agendamento foi atualizado com sucesso.",
@@ -422,59 +423,41 @@ export default function Agendamentos() {
             <CardTitle className="text-lg">Calendário</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="calendar-wrapper">
-              <Calendar
-                // Define o idioma do calendário para português do Brasil
-                locale={ptBR}
-                // Define o modo de seleção para uma única data
-                mode="single"
-                // Define a data selecionada
-                selected={selectedDate}
-                // Define a função a ser chamada quando uma data é selecionada
-                onSelect={handleDateSelect}
-                // Define classes CSS para o componente Calendar
-                className="rounded-md border shadow-sm w-full"
-                // Define uma função para desabilitar datas anteriores ao dia atual
-                disabled={(date) =>
-                  date < new Date(new Date().setHours(0, 0, 0, 0))
-                }
-                // Define classes CSS personalizadas para vários elementos do calendário
-                classNames={{
-                  // Estilo para o dia selecionado
-                  day_selected:
-                    "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-                  // Estilo para o dia atual
-                  day_today: "bg-accent text-accent-foreground",
-                  // Estilo para dias fora do mês atual
-                  day_outside: "text-muted-foreground opacity-50",
-                  // Estilo para dias desabilitados
-                  day_disabled: "text-muted-foreground opacity-50",
-                  // Estilo para dias no meio de um intervalo selecionado
-                  day_range_middle:
-                    "aria-selected:bg-accent aria-selected:text-accent-foreground",
-                  // Estilo para dias ocultos
-                  day_hidden: "invisible",
-                  // Estilo para botões de navegação
-                  nav_button: "hover:bg-accent hover:text-accent-foreground",
-                  // Posicionamento do botão de navegação anterior
-                  nav_button_previous: "absolute left-1",
-                  // Posicionamento do botão de navegação seguinte
-                  nav_button_next: "absolute right-1",
-                  // Estilo para a tabela do calendário
-                  table: "w-full border-collapse space-y-1",
-                  // Estilo para a linha de cabeçalho (dias da semana)
-                  head_row: "flex w-full mt-2 justify-center",
-                  // Estilo para as células de cabeçalho
-                  head_cell:
-                    "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
-                  // Estilo para as linhas de dias
-                  row: "flex w-full mt-2 justify-center",
-                  // Estilo para as células de dias
-                  cell: "text-center text-sm p-0 relative flex justify-center items-center",
-                  // Estilo para os números dos dias
-                  day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100",
-                }}
-              />
+            <div className="calendar-container">
+              <div className="calendar-wrapper">
+                <Calendar
+                  locale={ptBR}
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={handleDateSelect}
+                  className={`rounded-md border shadow-sm w-full ${
+                    isMobile ? "" : "pl-11"
+                  }`}
+                  disabled={(date) =>
+                    date < new Date(new Date().setHours(0, 0, 0, 0))
+                  }
+                  classNames={{
+                    day_selected:
+                      "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                    day_today: "bg-accent text-accent-foreground",
+                    day_outside: "text-muted-foreground opacity-50",
+                    day_disabled: "text-muted-foreground opacity-50",
+                    day_range_middle:
+                      "aria-selected:bg-accent aria-selected:text-accent-foreground",
+                    day_hidden: "invisible",
+                    nav_button: "hover:bg-accent hover:text-accent-foreground",
+                    nav_button_previous: "absolute left-1",
+                    nav_button_next: "absolute right-1",
+                    table: "w-full border-collapse space-y-1",
+                    head_row: "flex w-full mt-2 justify-center",
+                    head_cell:
+                      "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+                    row: "flex w-full mt-2 justify-center",
+                    cell: "text-center text-sm p-0 relative flex justify-center items-center",
+                    day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100",
+                  }}
+                />
+              </div>
             </div>
             <Button
               onClick={handleScheduleClick}

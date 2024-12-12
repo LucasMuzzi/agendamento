@@ -22,7 +22,6 @@
   max-width: 1000px;
 }
 
-
 .h-9 {
   height: 30px;
 }
@@ -34,11 +33,11 @@
 
 .calendar-wrapper {
   display: flex;
-  justify-content: center;
+  justify-content: center; /* Centraliza o calendário no card */
   width: 100%;
-  max-width: 350px;
-  margin: 0 auto;
-  padding: 1rem; /* Adiciona padding ao redor do calendário */
+  max-width: 350px; /* Ajuste conforme necessário */
+  margin: 0 auto; /* Centraliza o card */
+  padding: 1rem; /* Ajuste o padding conforme necessário */
 }
 
 .table {
@@ -66,7 +65,25 @@
   width: 100%; /* Largura padrão para telas menores */
 }
 
+/* Estilos para a linha de cabeçalho do calendário */
+.head_row,
+.row {
+  display: flex;
+  justify-content: center; /* Centraliza os dias da semana e os dias do calendário */
+  width: 100%;
+  margin: 0;
+  padding: 0; /* Remova o padding se estiver causando deslocamento */
+}
 
+.head_cell,
+.cell {
+  flex: 1; /* Isso faz com que as células ocupem espaço igual */
+  display: flex;
+  justify-content: center; /* Centraliza o conteúdo dentro da célula */
+  align-items: center; /* Alinha verticalmente o conteúdo da célula */
+  padding: 0.5rem; /* Ajuste o padding conforme necessário */
+  text-align: center; /* Centraliza o texto */
+}
 
 /* Media queries organizadas por intervalos claros */
 
@@ -75,7 +92,6 @@
   .calendar-wrapper {
     max-width: 280px;
   }
-
 }
 
 /* Telas de 321px a 375px */
