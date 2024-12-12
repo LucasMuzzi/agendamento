@@ -22,7 +22,7 @@
   max-width: 1000px;
 }
 
-/* Estilos para os dias do calendário */
+
 .h-9 {
   height: 30px;
 }
@@ -32,93 +32,86 @@
   font-size: 0.875rem;
 }
 
+.calendar-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: 350px;
+  margin: 0 auto;
+  padding: 1rem; /* Adiciona padding ao redor do calendário */
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse; /* Garante que as bordas das células se unam */
+}
+
+.row {
+  display: flex; /* Usar flexbox para as linhas */
+  justify-content: center; /* Centraliza as células dentro da linha */
+  margin: 0; /* Remove margens indesejadas */
+}
+
+.cell {
+  display: flex; /* Usar flexbox para as células */
+  justify-content: center; /* Centraliza o conteúdo da célula */
+  align-items: center; /* Alinha verticalmente o conteúdo da célula */
+  padding: 0.5rem; /* Adiciona padding às células */
+  text-align: center; /* Centraliza o texto */
+}
+
 /* Estilo base para o dialog */
 .dialog-content {
   max-width: 600px; /* Largura máxima para telas grandes */
   width: 100%; /* Largura padrão para telas menores */
 }
 
+
+
 /* Media queries organizadas por intervalos claros */
 
 /* Telas menores ou iguais a 320px */
 @media (max-width: 320px) {
-  .calendar-card {
-    /* background-color: #ffe6e6;  */
+  .calendar-wrapper {
+    max-width: 280px;
   }
-  .schedule-card {
-    /* background-color: #fff5cc;  */
-  }
-  .dialog-content {
-    /* background-color: #e6faff;  */
-  }
-  .calendar {
-    padding: 0rem;
-  }
+
 }
 
 /* Telas de 321px a 375px */
 @media (min-width: 321px) and (max-width: 375px) {
-  .calendar-card {
-    /* background-color: #ebe6ff;  */
-  }
-  .schedule-card {
-    /* background-color: #ffe6f2;  */
-  }
-  .dialog-content {
-    /* background-color: #f9e6ff;  */
-  }
-  .calendar {
-    padding-left: 0.1rem;
-    padding-right: 0.1rem;
+  .calendar-wrapper {
+    max-width: 300px;
   }
 }
 
 /* Telas de 376px a 390px */
 @media (min-width: 376px) and (max-width: 390px) {
-  .calendar-card {
-    /* background-color: #f7f2e6; */
-  }
-  .schedule-card {
-    /* background-color: #e6fff5;  */
-  }
-  .dialog-content {
-    /* background-color: #f3e6ff;  */
-  }
-  .calendar {
-    padding-left: 1rem;
-    padding-right: 1rem;
+  .calendar-wrapper {
+    max-width: 320px;
   }
 }
 
 /* Telas de 391px a 414px */
 @media (min-width: 391px) and (max-width: 414px) {
-  .calendar-card {
-    /* background-color: #f9e6f3; */
+  /* .calendar-card {
+  
   }
   .schedule-card {
-    /* background-color: #fff5cc;  */
+  
   }
   .dialog-content {
-    /* background-color: #e6faff;  */
+   
   }
   .calendar {
     padding-left: 1.9rem;
     padding-right: 1.9rem;
-  }
+  } */
 }
 
 /* Telas maiores ou iguais a 415px */
 @media (min-width: 415px) {
-  .calendar-card {
-    padding-left: 1rem;
-    padding-right: 1rem;
-    /* background-color: #ffe6e6; */
-  }
-  .schedule-card {
-    /* background-color: #e6ffe6 */
-  }
-  .calendar {
-    padding-left: 1.8rem;
-    padding-right: 1.8rem;
+  .calendar-wrapper {
+    max-width: 350px;
   }
 }

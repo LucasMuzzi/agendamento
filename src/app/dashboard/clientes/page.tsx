@@ -80,7 +80,6 @@ export default function Clientes() {
         whatsapp: cliente.whatsapp,
       });
 
-      console.log(response);
       const newCliente = { ...cliente, id: response.client._id };
       setClientes([...clientes, newCliente]);
       setIsModalOpen(false);

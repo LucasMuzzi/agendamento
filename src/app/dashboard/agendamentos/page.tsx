@@ -162,8 +162,6 @@ export default function Agendamentos() {
 
   useEffect(() => {
     updateBookedTimeSlots();
-    console.log("Booked Time Slots:", bookedTimeSlots);
-    console.log("Fetched Schedule:", fetchedSchedule);
   }, [selectedDate, agendamentos, updateBookedTimeSlots]);
 
   const handleDateSelect = useCallback((date: Date | undefined) => {
@@ -195,7 +193,7 @@ export default function Agendamentos() {
     if (selectedDate && selectedTimes.length > 0 && nome && contato) {
       const userCookie = Cookies.get("info");
       if (!userCookie) {
-        console.error("User cookie not found");
+        console.error("User  cookie not found");
         return;
       }
 
@@ -214,36 +212,23 @@ export default function Agendamentos() {
       try {
         setIsLoading(true);
         const agendamentosCriados = await Promise.all(
-          novosAgendamentos.map((agendamento: any) =>
+          novosAgendamentos.map((agendamento) =>
             agendamentoService.criarAgendamento(agendamento)
           )
         );
 
-        setAgendamentos((prev: Agendamento[]) => [
-          ...prev,
-          ...agendamentosCriados.map((agendamento: any) => ({
-            id: agendamento._id,
-            data: new Date(agendamento.data),
-            horarios: agendamento.horarios,
-            nome: agendamento.nome,
-            contato: agendamento.contato,
-            isWhatsapp: agendamento.isWhatsapp,
-            tipoServico: agendamento.tipoServico,
-          })),
-        ]);
+        setAgendamentos((prev: any) => [...prev, novosAgendamentos]);
 
-        // Feche ambos os modais
         setIsFormModalOpen(false);
         setIsTimeModalOpen(false);
 
-        // Limpe os campos
+        // Limpa os campos do formulário
         setSelectedTimes([]);
         setNome("");
         setContato("");
         setIsWhatsapp(false);
         setTipoServico(serviceTypes.length > 0 ? serviceTypes[0].nome : "");
 
-        // Adicione o toaster de sucesso
         toast({
           title: "Agendamento criado",
           description: "O agendamento foi criado com sucesso.",
@@ -251,11 +236,9 @@ export default function Agendamentos() {
           duration: 3000,
         });
 
-        // Atualize os horários reservados
         updateBookedTimeSlots();
       } catch (error) {
         console.error("Erro ao gravar agendamento:", error);
-        // Adicione um toaster de erro
         toast({
           title: "Erro ao criar agendamento",
           description:
@@ -315,13 +298,7 @@ export default function Agendamentos() {
           )
         );
 
-        setAgendamentos((prev) =>
-          prev.map((a) =>
-            a.id === selectedAgendamento.id
-              ? { ...a, horarios: selectedTimes }
-              : a
-          )
-        );
+        setAgendamentos((prev: any) => [...prev, updatedAgendamentos]);
 
         setIsFormModalOpen(false);
         setSelectedTimes([]);
@@ -425,6 +402,10 @@ export default function Agendamentos() {
     );
   }, []);
 
+  useEffect(() => {
+    console.log("Agendamentos atualizados:", agendamentos);
+  }, [agendamentos]);
+
   return (
     <div
       className={`container mx-auto p-4 ${
@@ -440,39 +421,61 @@ export default function Agendamentos() {
           <CardHeader className="py-2">
             <CardTitle className="text-lg">Calendário</CardTitle>
           </CardHeader>
-          <CardContent className="p-4">
-            <Calendar
-              locale={ptBR}
-              mode="single"
-              selected={selectedDate}
-              onSelect={handleDateSelect}
-              className={`rounded-md border shadow-sm calendar ${
-                isMobile ? "" : "pl-8"
-              }`}
-              disabled={(date) =>
-                date < new Date(new Date().setHours(0, 0, 0, 0))
-              }
-              classNames={{
-                day_selected:
-                  "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-                day_today: "bg-accent text-accent-foreground",
-                day_outside: "text-muted-foreground opacity-50",
-                day_disabled: "text-muted-foreground opacity-50",
-                day_range_middle:
-                  "aria-selected:bg-accent aria-selected:text-accent-foreground",
-                day_hidden: "invisible",
-                nav_button: "hover:bg-accent hover:text-accent-foreground",
-                nav_button_previous: "absolute left-1",
-                nav_button_next: "absolute right-1",
-                table: "w-full border-collapse space-y-1",
-                head_row: "flex w-full mt-2 pl-8 ",
-                head_cell:
-                  "text-muted-foreground rounded-md w-9 font-normal text-md",
-                row: "flex w-full mt-2 pl-8",
-                cell: "table-cell text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100",
-              }}
-            />
+          <CardContent>
+            <div className="calendar-wrapper">
+              <Calendar
+                // Define o idioma do calendário para português do Brasil
+                locale={ptBR}
+                // Define o modo de seleção para uma única data
+                mode="single"
+                // Define a data selecionada
+                selected={selectedDate}
+                // Define a função a ser chamada quando uma data é selecionada
+                onSelect={handleDateSelect}
+                // Define classes CSS para o componente Calendar
+                className="rounded-md border shadow-sm w-full"
+                // Define uma função para desabilitar datas anteriores ao dia atual
+                disabled={(date) =>
+                  date < new Date(new Date().setHours(0, 0, 0, 0))
+                }
+                // Define classes CSS personalizadas para vários elementos do calendário
+                classNames={{
+                  // Estilo para o dia selecionado
+                  day_selected:
+                    "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                  // Estilo para o dia atual
+                  day_today: "bg-accent text-accent-foreground",
+                  // Estilo para dias fora do mês atual
+                  day_outside: "text-muted-foreground opacity-50",
+                  // Estilo para dias desabilitados
+                  day_disabled: "text-muted-foreground opacity-50",
+                  // Estilo para dias no meio de um intervalo selecionado
+                  day_range_middle:
+                    "aria-selected:bg-accent aria-selected:text-accent-foreground",
+                  // Estilo para dias ocultos
+                  day_hidden: "invisible",
+                  // Estilo para botões de navegação
+                  nav_button: "hover:bg-accent hover:text-accent-foreground",
+                  // Posicionamento do botão de navegação anterior
+                  nav_button_previous: "absolute left-1",
+                  // Posicionamento do botão de navegação seguinte
+                  nav_button_next: "absolute right-1",
+                  // Estilo para a tabela do calendário
+                  table: "w-full border-collapse space-y-1",
+                  // Estilo para a linha de cabeçalho (dias da semana)
+                  head_row: "flex w-full mt-2 justify-center",
+                  // Estilo para as células de cabeçalho
+                  head_cell:
+                    "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+                  // Estilo para as linhas de dias
+                  row: "flex w-full mt-2 justify-center",
+                  // Estilo para as células de dias
+                  cell: "text-center text-sm p-0 relative flex justify-center items-center",
+                  // Estilo para os números dos dias
+                  day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100",
+                }}
+              />
+            </div>
             <Button
               onClick={handleScheduleClick}
               className="w-full mt-4 text-sm sm:text-base"
@@ -515,7 +518,7 @@ export default function Agendamentos() {
                   .sort((a, b) => a.horario.localeCompare(b.horario))
                   .map((agendamento, index) => (
                     <TableRow
-                      key={index}
+                      key={`${agendamento.id}-${agendamento.horario}-${index}`}
                       className="cursor-pointer"
                       onClick={() => {
                         setSelectedAgendamento(agendamento);

@@ -26,6 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AxiosError } from "axios";
 import Image from "next/image";
 import { useTheme } from "next-themes";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Configuracoes() {
   const { toast } = useToast();
@@ -39,7 +40,8 @@ export default function Configuracoes() {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [isLogoSaved, setIsLogoSaved] = useState(false);
   const [serviceTypes, setServiceTypes] = useState<ServiceType[]>([]);
-  const [filteredServices, setFilteredServices] = useState([]);
+  const [filteredServices, setFilteredServices] = useState<any[]>([]);
+  const [isListVisible, setIsListVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [settings] = useState(new SettingsSerivce());
@@ -247,6 +249,10 @@ export default function Configuracoes() {
     fetchServiceTypes();
   }, [settings]);
 
+  const toggleListVisibility = () => {
+    setIsListVisible(!isListVisible);
+  };
+
   return (
     <div className={`container mx-auto p-4 ${isMobile ? "mt-12" : ""}`}>
       <Card
@@ -320,19 +326,34 @@ export default function Configuracoes() {
                 Remover
               </Button>
             </div>
-            <div className="mt-2 max-h-[150px] overflow-y-auto border rounded-md p-2">
-              <ul>
-                {filteredServices.map((service: any) => (
-                  <li
-                    key={service._id}
-                    onClick={() => handleSelectService(service.nome)}
-                    className="py-1 cursor-pointer hover:bg-accent hover:text-accent-foreground rounded px-2 transition-colors"
-                  >
-                    {service.nome}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <Button
+              type="button"
+              onClick={toggleListVisibility}
+              variant="outline"
+              className="flex items-center space-x-2"
+            >
+              {isListVisible ? (
+                <Eye className="h-4 w-4" />
+              ) : (
+                <EyeOff className="h-4 w-4" />
+              )}
+              <span>Ver serviços</span>
+            </Button>
+            {isListVisible && (
+              <div className="mt-2 max-h-[150px] overflow-y-auto border rounded-md p-2">
+                <ul>
+                  {filteredServices.map((service: any) => (
+                    <li
+                      key={service._id}
+                      onClick={() => handleSelectService(service.nome)}
+                      className="py-1 cursor-pointer hover:bg-accent hover:text-accent-foreground rounded px-2 transition-colors"
+                    >
+                      {service.nome}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
