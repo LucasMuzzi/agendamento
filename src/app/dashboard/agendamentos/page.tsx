@@ -211,13 +211,14 @@ export default function Agendamentos() {
 
       try {
         setIsLoading(true);
-        const agendamentosCriados = await Promise.all(
+        await Promise.all(
           novosAgendamentos.map((agendamento) =>
             agendamentoService.criarAgendamento(agendamento)
           )
         );
+  
 
-        setAgendamentos((prev: any) => [...prev, novosAgendamentos]);
+        setAgendamentos((prev: any) => [...prev, ...novosAgendamentos]);
 
         setIsFormModalOpen(false);
         setIsTimeModalOpen(false);
@@ -282,7 +283,7 @@ export default function Agendamentos() {
         id: selectedAgendamento.id,
         userId: user.codUser,
         data: selectedDate.toISOString(),
-        horarios: selectedTimes, // Use selectedTimes diretamente
+        horarios: selectedTimes,
         nome,
         contato,
         isWhatsapp,
@@ -317,7 +318,7 @@ export default function Agendamentos() {
         });
       } catch (error) {
         console.error("Erro ao atualizar agendamento:", error);
-        // Adicione um toaster de erro
+
         toast({
           title: "Erro ao atualizar agendamento",
           description:

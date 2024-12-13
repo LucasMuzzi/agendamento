@@ -3,7 +3,15 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { Users, Settings, LogOut, Menu, ChevronLeft, ChevronRight, Home } from 'lucide-react';
+import {
+  Users,
+  Settings,
+  LogOut,
+  Menu,
+  ChevronLeft,
+  ChevronRight,
+  Home,
+} from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { LoginClass } from "../api/services/authServices";
@@ -13,6 +21,8 @@ const loginClass = new LoginClass();
 const settings = new SettingsSerivce();
 
 interface SidebarProps {
+  isOpen: boolean;
+  onToggle: () => void;
   isMobile: boolean;
   onMenuClick: () => void;
 }
@@ -229,4 +239,3 @@ function SidebarLink({
     </Link>
   );
 }
-
