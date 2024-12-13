@@ -1,8 +1,5 @@
-/* agendamentos.css */
-
-/* Estilos gerais */
 * {
-  box-sizing: border-box; /* Adiciona box-sizing para todos os elementos */
+  box-sizing: border-box;
 }
 
 .calendar-card,
@@ -33,99 +30,83 @@
 
 .calendar-wrapper {
   display: flex;
-  justify-content: center; /* Centraliza o calendário no card */
+  justify-content: center;
   width: 100%;
-  max-width: 350px; /* Ajuste conforme necessário */
-  margin: 0 auto; /* Centraliza o card */
-  padding: 1rem; /* Ajuste o padding conforme necessário */
+  max-width: 350px;
+  margin: 0 auto;
+  padding: 1rem;
 }
 
 .table {
   width: 100%;
-  border-collapse: collapse; /* Garante que as bordas das células se unam */
+  border-collapse: collapse;
 }
 
 .row {
-  display: flex; /* Usar flexbox para as linhas */
-  justify-content: center; /* Centraliza as células dentro da linha */
-  margin: 0; /* Remove margens indesejadas */
+  display: flex;
+  justify-content: center;
+  margin: 0;
 }
 
 .cell {
-  display: flex; /* Usar flexbox para as células */
-  justify-content: center; /* Centraliza o conteúdo da célula */
-  align-items: center; /* Alinha verticalmente o conteúdo da célula */
-  padding: 0.5rem; /* Adiciona padding às células */
-  text-align: center; /* Centraliza o texto */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+  text-align: center;
 }
 
-/* Estilo base para o dialog */
 .dialog-content {
-  max-width: 600px; /* Largura máxima para telas grandes */
-  width: 100%; /* Largura padrão para telas menores */
+  max-width: 600px;
+  width: 100%;
 }
 
-/* Estilos para a linha de cabeçalho do calendário */
 .head_row,
 .row {
   display: flex;
-  justify-content: center; /* Centraliza os dias da semana e os dias do calendário */
+  justify-content: center;
   width: 100%;
   margin: 0;
-  padding: 0; /* Remova o padding se estiver causando deslocamento */
+  padding: 0;
 }
 
 .head_cell,
 .cell {
-  flex: 1; /* Isso faz com que as células ocupem espaço igual */
+  flex: 1;
   display: flex;
-  justify-content: center; /* Centraliza o conteúdo dentro da célula */
-  align-items: center; /* Alinha verticalmente o conteúdo da célula */
-  padding: 0.5rem; /* Ajuste o padding conforme necessário */
-  text-align: center; /* Centraliza o texto */
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+  text-align: center;
 }
 
 /* Media queries organizadas por intervalos claros */
 
-/* Telas menores ou iguais a 320px */
 @media (max-width: 320px) {
   .calendar-wrapper {
     max-width: 280px;
   }
 }
 
-/* Telas de 321px a 375px */
 @media (min-width: 321px) and (max-width: 375px) {
   .calendar-wrapper {
     max-width: 300px;
   }
 }
 
-/* Telas de 376px a 390px */
 @media (min-width: 376px) and (max-width: 390px) {
   .calendar-wrapper {
     max-width: 320px;
   }
 }
 
-/* Telas de 391px a 414px */
 @media (min-width: 391px) and (max-width: 414px) {
-  /* .calendar-card {
-  
-  }
-  .schedule-card {
-  
-  }
-  .dialog-content {
-   
-  }
   .calendar {
     padding-left: 1.9rem;
     padding-right: 1.9rem;
-  } */
+  }
 }
 
-/* Telas maiores ou iguais a 415px */
 @media (min-width: 415px) {
   .calendar-wrapper {
     max-width: 350px;
