@@ -254,9 +254,17 @@ export default function Configuracoes() {
   };
 
   return (
-    <div className={`container mx-auto p-4 ${isMobile ? "mt-12" : ""}`}>
+    <div
+      className={`container mx-auto p-4 overflow-hidden ${
+        isMobile ? "mt-12" : ""
+      }`}
+    >
       <Card
-        className={`${isMobile ? "w-full" : "w-full max-w-[800px]"} mx-auto`}
+        className={`${
+          isMobile
+            ? "w-full h-[calc(90vh-2rem)]"
+            : "w-full max-w-[800px] h-[calc(100vh-2rem)]"
+        } mx-auto overflow-auto`}
       >
         <CardHeader>
           <CardTitle>Configurações do Site</CardTitle>

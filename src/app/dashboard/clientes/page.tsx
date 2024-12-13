@@ -19,11 +19,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { PhoneIcon as WhatsappIcon, Edit, Trash2, X } from "lucide-react";
+import { PhoneIcon as WhatsappIcon, Edit, Trash2, X } from 'lucide-react';
 import { ClienteForm } from "@/components/clientForm";
 import { ClienteDetalhesModal } from "@/components/ClienteDetalhesModal";
 import { clientService } from "@/app/api/services/clientServices";
 import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
 
 type Cliente = {
   id: string;
@@ -38,8 +39,13 @@ export default function Clientes() {
   const [currentCliente, setCurrentCliente] = useState<Cliente | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [filterText, setFilterText] = useState("");
   const { toast } = useToast();
   const ClientService = new clientService();
+
+  const filteredClientes = clientes.filter((cliente) =>
+    cliente.nome.toLowerCase().includes(filterText.toLowerCase())
+  );
 
   useEffect(() => {
     const handleResize = () => {
@@ -167,12 +173,16 @@ export default function Clientes() {
   return (
     <div className={`container mx-auto p-4 ${isMobile ? "mt-12" : ""}`}>
       <Card
-        className={`${isMobile ? "w-full" : "w-full max-w-[800px]"} mx-auto`}
+        className={`${
+          isMobile
+            ? "w-full h-[calc(100vh-4rem)]"
+            : "w-full max-w-[800px] h-[calc(100vh-2rem)]"
+        } mx-auto flex flex-col`}
       >
         <CardHeader>
           <CardTitle>Cadastro de Clientes</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex-1 flex flex-col overflow-hidden">
           <div className="flex justify-between items-center mb-4">
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
               <DialogTrigger asChild>
@@ -202,7 +212,26 @@ export default function Clientes() {
               </DialogContent>
             </Dialog>
           </div>
-          <div className="overflow-x-auto">
+          <div className="mb-4 relative">
+            <Input
+              type="text"
+              placeholder="Filtrar clientes..."
+              value={filterText}
+              onChange={(e) => setFilterText(e.target.value)}
+              className="w-full pr-8"
+            />
+            {filterText && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                onClick={() => setFilterText('')}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+          <div className="flex-1 overflow-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -213,7 +242,7 @@ export default function Clientes() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {clientes.map((cliente) => (
+                {filteredClientes.map((cliente) => (
                   <TableRow
                     key={cliente.id}
                     onClick={() => handleRowClick(cliente)}
@@ -299,3 +328,4 @@ export default function Clientes() {
     </div>
   );
 }
+

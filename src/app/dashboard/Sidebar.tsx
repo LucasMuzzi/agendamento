@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   Users,
   Settings,
@@ -30,11 +30,9 @@ interface SidebarProps {
 export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [logo, setLogo] = useState("/placeholder.svg?height=50&width=50");
-  const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    // Ler o estado do localStorage ao montar o componente
     const storedState = localStorage.getItem("sidebarOpen");
     if (storedState) {
       setIsOpen(JSON.parse(storedState));
@@ -56,7 +54,6 @@ export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
   const handleToggle = () => {
     setIsOpen((prev) => {
       const newState = !prev;
-      // Salvar o novo estado no localStorage
       localStorage.setItem("sidebarOpen", JSON.stringify(newState));
       return newState;
     });
@@ -75,11 +72,11 @@ export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
     <>
       {isMobile && !isOpen && (
         <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleToggle}
-          className="fixed top-4 left-4 z-50 p-2 rounded-full bg-background shadow-md"
-        >
+  variant="ghost"
+  size="icon"
+  onClick={handleToggle}
+  className="fixed top-4 left-4 z-50 p-2 rounded-full bg-background shadow-md"
+>
           <Menu className="h-6 w-6" />
         </Button>
       )}
@@ -87,17 +84,16 @@ export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
       <aside
         className={`${
           isMobile
-            ? `fixed top-0 left-0 h-full z-40 bg-background text-foreground border-r border-border shadow-md transition-transform duration-300 ${
+            ? `fixed inset-y-0 left-0 z-40 bg-background text-foreground border-r border-border shadow-md transition-transform duration-300 ${
                 isOpen ? "translate-x-0" : "-translate-x-full"
-              } pb-16`
+              }`
             : "relative h-screen bg-background text-foreground border-r border-border shadow-md"
-        } flex flex-col ${isOpen ? "w-64" : "w-20"}`}
-        style={isMobile ? { zIndex: 99, marginTop: "3rem" } : {}}
+        } flex flex-col ${isOpen ? "w-64" : "w-24"}`}
       >
         <div className="p-4 flex flex-col items-center justify-center relative">
           <div
             className={`flex items-center justify-center transition-all duration-300 ease-in-out ${
-              isOpen ? "w-12 h-12" : "w-10 h-10"
+              isOpen ? "w-16 h-16" : "w-12 h-12"
             }`}
           >
             <div className="relative w-full h-full overflow-hidden bg-muted rounded-full">
@@ -116,7 +112,7 @@ export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
               size="icon"
               onClick={handleToggle}
               className={`absolute top-4 right-0 z-10 h-8 w-8 rounded-full border border-border bg-background p-0 hover:bg-accent hover:text-accent-foreground ${
-                isOpen ? "-right-4" : "-right-4"
+                isOpen ? "-right-4" : "-right-3"
               }`}
             >
               {isOpen ? (
@@ -127,7 +123,7 @@ export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
             </Button>
           )}
         </div>
-        <nav className="space-y-2 p-2">
+        <nav className="space-y-2 p-2 flex-grow">
           <SidebarLink
             href="/dashboard/home"
             icon={<Home className="w-5 h-5" />}
@@ -176,6 +172,8 @@ export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
           >
             Configurações
           </SidebarLink>
+        </nav>
+        <div className="p-2">
           <SidebarLink
             href="#"
             icon={<LogOut className="w-5 h-5 text-destructive" />}
@@ -190,14 +188,13 @@ export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
           >
             Logout
           </SidebarLink>
-        </nav>
+        </div>
       </aside>
 
       {isMobile && isOpen && (
         <div
           className="fixed inset-0 bg-background/80 backdrop-blur-sm z-30"
           onClick={handleToggle}
-          style={{ zIndex: 98 }}
         />
       )}
     </>

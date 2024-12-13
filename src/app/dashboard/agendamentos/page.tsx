@@ -216,7 +216,6 @@ export default function Agendamentos() {
             agendamentoService.criarAgendamento(agendamento)
           )
         );
-  
 
         setAgendamentos((prev: any) => [...prev, ...novosAgendamentos]);
 
@@ -471,7 +470,9 @@ export default function Agendamentos() {
         {/* Tabela de Agendamentos */}
         <Card className="schedule-card overflow-hidden h-[calc(44vh-2rem)] lg:h-[calc(100vh-2rem)]">
           <CardHeader>
-            <CardTitle>Agendamentos do Dia</CardTitle>
+            <CardTitle>
+              Agendamentos do Dia: {selectedDate?.toLocaleDateString()}
+            </CardTitle>
           </CardHeader>
           <CardContent className="h-[calc(100%-5rem)] overflow-auto">
             <Table>
@@ -512,7 +513,12 @@ export default function Agendamentos() {
                       <TableCell className="font-medium">
                         {agendamento.horario}
                       </TableCell>
-                      <TableCell>{agendamento.nome}</TableCell>
+                      <TableCell>
+                        {" "}
+                        {isMobile
+                          ? agendamento.nome.split(" ")[0]
+                          : agendamento.nome}
+                      </TableCell>
                       {!isMobile && (
                         <TableCell>{agendamento.contato}</TableCell>
                       )}

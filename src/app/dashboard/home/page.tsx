@@ -105,9 +105,17 @@ export default function DashboardHome() {
   }, []);
 
   return (
-    <div className={`container mx-auto p-4 ${isMobile ? "mt-12" : ""}`}>
+    <div
+      className={`container mx-auto p-4 overflow-hidden ${
+        isMobile ? "mt-12" : ""
+      }`}
+    >
       <Card
-        className={`schedule-card-home  overflow-hidden h-[calc(44vh-2rem)] lg:h-[calc(100vh-2rem)]`}
+        className={`${
+          isMobile
+            ? "w-full h-[calc(90vh-2rem)]"
+            : "w-full max-w-[800px] h-[calc(100vh-2rem)]"
+        } mx-auto`}
       >
         <CardHeader>
           <CardTitle>Agendamentos de Hoje</CardTitle>
@@ -141,7 +149,11 @@ export default function DashboardHome() {
                     <TableCell className="font-medium">
                       {agendamento.horario}
                     </TableCell>
-                    <TableCell>{agendamento.nome}</TableCell>
+                    <TableCell>
+                      {isMobile
+                        ? agendamento.nome.split(" ")[0]
+                        : agendamento.nome}
+                    </TableCell>
                     {!isMobile && <TableCell>{agendamento.contato}</TableCell>}
                     {!isMobile && (
                       <TableCell>{agendamento.tipoServico}</TableCell>
