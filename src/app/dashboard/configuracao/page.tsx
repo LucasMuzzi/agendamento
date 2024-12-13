@@ -27,6 +27,7 @@ import { AxiosError } from "axios";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import { Eye, EyeOff } from "lucide-react";
+import { ImagePreviewModal } from "@/components/ImagePreviewModal";
 
 export default function Configuracoes() {
   const { toast } = useToast();
@@ -43,6 +44,7 @@ export default function Configuracoes() {
   const [filteredServices, setFilteredServices] = useState<any[]>([]);
   const [isListVisible, setIsListVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [settings] = useState(new SettingsSerivce());
 
@@ -147,6 +149,10 @@ export default function Configuracoes() {
           duration: 3000,
           className: "bg-green-500 text-white",
         });
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
       } catch (error) {
         console.error(
           "Erro ao enviar logo:",
@@ -287,8 +293,11 @@ export default function Configuracoes() {
                 onChange={handleLogoChange}
                 className="hidden"
               />
-              {logoPreview && !isLogoSaved && (
-                <div className="relative w-16 h-16 border border-gray-300 rounded">
+              {logoPreview && (
+                <div
+                  className="relative w-16 h-16 border border-gray-300 rounded cursor-pointer"
+                  onClick={() => setIsPreviewModalOpen(true)}
+                >
                   <Image
                     src={logoPreview}
                     alt="Logo preview"
@@ -417,6 +426,11 @@ export default function Configuracoes() {
             </Select>
           </div>
         </CardContent>
+        <ImagePreviewModal
+          isOpen={isPreviewModalOpen}
+          onClose={() => setIsPreviewModalOpen(false)}
+          imageUrl={logoPreview || ""}
+        />
       </Card>
     </div>
   );
