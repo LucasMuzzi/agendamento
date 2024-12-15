@@ -15,6 +15,7 @@ import {
 import { LoginClass } from "@/app/api/services/authServices";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
+import { toast, useToast } from "@/hooks/use-toast";
 
 export default function ResetPasswordPage() {
   const [otp, setOtp] = useState("");
@@ -24,6 +25,7 @@ export default function ResetPasswordPage() {
   const [successMessage, setSuccessMessage] = useState("");
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
   const router = useRouter();
 
   useEffect(() => {
@@ -41,12 +43,24 @@ export default function ResetPasswordPage() {
 
     if (!otp || !newPassword || !confirmPassword) {
       setError("Por favor, preencha todos os campos.");
+      toast({
+        title: "Erro",
+        description: "Por favor, preencha todos os campos.",
+        variant: "destructive",
+        duration: 3000,
+      });
       setIsLoading(false);
       return;
     }
 
     if (newPassword !== confirmPassword) {
       setError("As senhas não coincidem.");
+      toast({
+        title: "Erro",
+        description: "As senhas não coincidem.",
+        duration: 3000,
+        variant: "destructive",
+      });
       setIsLoading(false);
       return;
     }
@@ -58,18 +72,30 @@ export default function ResetPasswordPage() {
         code: otp,
         newpass: newPassword,
       });
-      setSuccessMessage(response.message);
+      toast({
+        title: "Sucesso",
+        description: response.message,
+        duration: 3000,
+        className: "bg-green-500 text-white",
+      });
 
       setTimeout(() => {
         router.push("/login/auth");
       }, 2000);
     } catch (err) {
       console.error("Erro ao redefinir a senha:", err);
+      let errorMessage = "Erro de rede. Tente novamente mais tarde.";
       if (err instanceof Error) {
-        setError(err.message || "Ocorreu um erro inesperado. Tente novamente.");
-      } else {
-        setError("Erro de rede. Tente novamente mais tarde.");
+        errorMessage =
+          err.message || "Ocorreu um erro inesperado. Tente novamente.";
       }
+      setError(errorMessage);
+      toast({
+        title: "Erro",
+        description: "Verifique o código digitado",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
     }
   };
@@ -118,16 +144,7 @@ export default function ResetPasswordPage() {
                 disabled={isLoading}
               />
             </div>
-            {error && (
-              <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-            {successMessage && (
-              <Alert>
-                <AlertDescription>{successMessage}</AlertDescription>
-              </Alert>
-            )}
+
             <Button className="w-full" type="submit" disabled={isLoading}>
               {isLoading ? (
                 <>

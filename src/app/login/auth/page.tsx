@@ -17,6 +17,7 @@ import {
 import { LoginClass } from "@/app/api/services/authServices";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Cookies from "js-cookie";
+import { useToast } from "@/hooks/use-toast";
 
 interface ApiError {
   response?: {
@@ -32,6 +33,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -58,25 +60,43 @@ export default function LoginPage() {
       };
 
       Cookies.set("info", JSON.stringify(responseBody), { expires: 1 });
-      router.push("/dashboard/home");
+
+      toast({
+        title: "Login bem-sucedido",
+
+        duration: 3000,
+        className: "bg-green-500 text-white",
+      });
+
+      // Delay the redirect slightly to allow the user to see the success message
+      setTimeout(() => {
+        router.push("/dashboard/home");
+      });
     } catch (err: unknown) {
       console.error("Erro ao fazer login:", err);
 
+      let errorMessage = "Erro ao efetuar login. Tente novamente.";
+
       if (err instanceof Error) {
-        setError("Erro ao efetuar login");
+        errorMessage = err.message;
       } else if (typeof err === "object" && err !== null) {
         const apiError = err as ApiError;
         if (apiError.response) {
-          setError(
+          errorMessage =
             apiError.response.data.message ||
-              "Credenciais inválidas. Tente novamente."
-          );
+            "Credenciais inválidas. Tente novamente.";
         } else {
-          setError("Erro de rede. Tente novamente mais tarde.");
+          errorMessage = "Erro de rede. Tente novamente mais tarde.";
         }
-      } else {
-        setError("Erro de rede. Tente novamente mais tarde.");
       }
+
+      toast({
+        title: "Erro de login",
+        description: "Verifique as credenciais e tente novamente!",
+        duration: 3000,
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
     }
   };
@@ -137,11 +157,7 @@ export default function LoginPage() {
                 </Button>
               </div>
             </div>
-            {error && (
-              <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+
             <Button className="w-full" type="submit" disabled={isLoading}>
               {isLoading ? (
                 <>
