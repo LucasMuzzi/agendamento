@@ -115,58 +115,6 @@ export class SettingsSerivce {
     }
   }
 
-  async uploadFile(file: File): Promise<any> {
-    if (!this.codUser) {
-      this.codUser = this.getCodUserFromCookie();
-      if (!this.codUser) {
-        throw new Error("CodUser não encontrado no cookie");
-      }
-    }
-
-    const formData = new FormData();
-    formData.append("logotipo", file);
-    formData.append("codUser", this.codUser);
-    try {
-      const response = await apiAgend.post("/api/upload-image", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      return response.data;
-    } catch (error: any) {
-      if (error.response) {
-      } else {
-        console.error("Erro ao configurar a solicitação:", error.message);
-      }
-      throw new Error("Erro ao fazer upload do arquivo.");
-    }
-  }
-
-  async fetchImage(): Promise<string> {
-    if (!this.codUser) {
-      this.codUser = this.getCodUserFromCookie();
-      if (!this.codUser) {
-        throw new Error("CodUser  não encontrado no cookie");
-      }
-    }
-
-    try {
-      const response = await apiAgend.post("/api/get-image", {
-        codUser: this.codUser,
-      });
-
-  
-      if (!response.data || !response.data.logotipo) {
-        throw new Error("Logotipo não encontrado na resposta da API");
-      }
-
-      return response.data.logotipo;
-    } catch (error) {
-      console.error("Erro ao buscar imagem:", error);
-      throw error;
-    }
-  }
-
   async removeServiceType(id: string): Promise<any> {
     if (!this.codUser) {
       this.codUser = this.getCodUserFromCookie();

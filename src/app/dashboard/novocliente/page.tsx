@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
 import {
   Card,
   CardContent,
@@ -22,6 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { newClienteService } from "@/app/api/services/newClientService";
 
 interface ClientData {
   name: string;
@@ -31,6 +33,7 @@ interface ClientData {
 }
 
 export default function ClientManagement() {
+  const clientService = new newClienteService();
   const [clientData, setClientData] = useState<ClientData>({
     name: "",
     email: "",
@@ -39,6 +42,18 @@ export default function ClientManagement() {
   });
   const [clients, setClients] = useState<ClientData[]>([]);
   const { toast } = useToast();
+  const [isMobile, setIsMobile] = useState(false); // Estado para verificar se está no mobile
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Chama a função uma vez para definir o estado inicial
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -75,10 +90,13 @@ export default function ClientManagement() {
     console.log("Sending data to API:", clientData);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Chama a função newClient do serviço
+      const response = await clientService.newClient(clientData);
 
-      setClients((prevClients) => [...prevClients, clientData]);
+      // Adiciona o cliente à lista de clientes
+      setClients((prevClients) => [...prevClients, response]);
 
+      // Limpa os campos do formulário
       setClientData({
         name: "",
         email: "",
@@ -101,8 +119,13 @@ export default function ClientManagement() {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="flex flex-col lg:flex-row gap-6">
-        <Card className="w-full lg:w-1/2 mt-10 lg:mb-0">
+      <div className="flex flex-col lg:flex-row gap-6 h-full">
+        <Card
+          className={cn(
+            "w-full lg:w-1/2 mt-10 lg:mt-0 flex flex-col",
+            isMobile ? "min-h-[400px]" : "min-h-[600px]"
+          )}
+        >
           <CardHeader>
             <CardTitle>Cadastro de Cliente</CardTitle>
             <CardDescription>
@@ -110,7 +133,7 @@ export default function ClientManagement() {
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 flex-grow">
               <div className="space-y-2">
                 <Label htmlFor="name">Nome</Label>
                 <Input
@@ -162,13 +185,13 @@ export default function ClientManagement() {
           </form>
         </Card>
 
-        <Card className="w-full lg:w-1/2 h-[280px]">
+        <Card className="w-full lg:w-1/2 lg:mt-0 flex flex-col min-h-[350px]">
           <CardHeader>
             <CardTitle>Lista de Clientes</CardTitle>
             <CardDescription>Clientes cadastrados no sistema</CardDescription>
           </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-[400px] w-full">
+          <CardContent className="space-y-4 flex-grow">
+            <ScrollArea className="flex-grow w-full">
               <Table>
                 <TableHeader>
                   <TableRow>
