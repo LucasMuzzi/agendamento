@@ -61,6 +61,7 @@ export default function ClientManagement() {
       try {
         const response = await clientService.getUsers();
         const users = response.users;
+        console.log(users);
         setClients(users);
       } catch (error) {
         toast({
@@ -213,14 +214,18 @@ export default function ClientManagement() {
                   <TableRow>
                     <TableHead>Nome</TableHead>
                     <TableHead>Email</TableHead>
-                    <TableHead>Código de Usuário</TableHead>
+                    <TableHead>
+                      {isMobile ? "Código" : "Código de Usuário"}
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {clients.map((client, index) => (
                     <TableRow key={index}>
-                      <TableCell>{client.name}</TableCell>
-                      <TableCell>{client.email}</TableCell>
+                      <TableCell>
+                        {isMobile ? client.name.split(" ")[0] : client.name}
+                      </TableCell>
+                      {!isMobile && <TableCell>{client.email}</TableCell>}
                       <TableCell>{client.codUser}</TableCell>
                     </TableRow>
                   ))}
