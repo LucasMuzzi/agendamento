@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -42,7 +43,7 @@ export default function ClientManagement() {
   });
   const [clients, setClients] = useState<ClientData[]>([]);
   const { toast } = useToast();
-  const [isMobile, setIsMobile] = useState(false); // Estado para verificar se está no mobile
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -50,9 +51,27 @@ export default function ClientManagement() {
     };
 
     window.addEventListener("resize", handleResize);
-    handleResize(); // Chama a função uma vez para definir o estado inicial
+    handleResize();
 
     return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await clientService.getUsers();
+        const users = response.users;
+        setClients(users);
+      } catch (error) {
+        toast({
+          title: "Erro",
+          description: "Ocorreu um erro ao buscar os clientes.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchUsers();
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,16 +106,11 @@ export default function ClientManagement() {
       return;
     }
 
-    console.log("Sending data to API:", clientData);
-
     try {
-      // Chama a função newClient do serviço
       const response = await clientService.newClient(clientData);
 
-      // Adiciona o cliente à lista de clientes
       setClients((prevClients) => [...prevClients, response]);
 
-      // Limpa os campos do formulário
       setClientData({
         name: "",
         email: "",
@@ -107,6 +121,8 @@ export default function ClientManagement() {
       toast({
         title: "Cliente cadastrado",
         description: "O cliente foi cadastrado com sucesso.",
+        duration: 3000,
+        className: "bg-green-500 text-white",
       });
     } catch (error) {
       toast({

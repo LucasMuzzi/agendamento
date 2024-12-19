@@ -29,4 +29,14 @@ export class newClienteService {
       throw error;
     }
   }
+
+  async getUsers() {
+    try {
+      const response = await apiAgend.get("/api/get-users");
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao criar tipo de serviço:", error);
+      throw error;
+    }
+  }
 }

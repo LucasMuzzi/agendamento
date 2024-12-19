@@ -67,6 +67,7 @@ export default function DashboardHome() {
       }
 
       const user = JSON.parse(userCookie);
+      console.log(user.codUser);
       try {
         const agendamentosData: AgendamentoResponse[] =
           await agendamentoService.buscarAgendamentos(user.codUser);
