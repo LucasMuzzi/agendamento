@@ -41,7 +41,6 @@ import {
 } from "@/app/api/services/appointmentServices";
 import Cookies from "js-cookie";
 import { ptBR } from "date-fns/locale";
-import { LoadingScreen } from "@/components/loading";
 import "./agendamentos.css";
 import { ClientFilterModal } from "@/components/clientFilterModal";
 import {

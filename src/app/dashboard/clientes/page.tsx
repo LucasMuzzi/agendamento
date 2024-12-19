@@ -19,7 +19,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { PhoneIcon as WhatsappIcon, Edit, Trash2, X } from 'lucide-react';
+import { PhoneIcon as WhatsappIcon, Edit, Trash2, X } from "lucide-react";
 import { ClienteForm } from "@/components/clientForm";
 import { ClienteDetalhesModal } from "@/components/ClienteDetalhesModal";
 import { clientService } from "@/app/api/services/clientServices";
@@ -225,7 +225,7 @@ export default function Clientes() {
                 variant="ghost"
                 size="icon"
                 className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                onClick={() => setFilterText('')}
+                onClick={() => setFilterText("")}
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -328,4 +328,3 @@ export default function Clientes() {
     </div>
   );
 }
-

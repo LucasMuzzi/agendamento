@@ -63,7 +63,6 @@ export default function LoginPage() {
 
       toast({
         title: "Login bem-sucedido",
-
         duration: 3000,
         className: "bg-green-500 text-white",
       });

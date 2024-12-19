@@ -11,9 +11,11 @@ import {
   ChevronLeft,
   ChevronRight,
   Home,
+  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LoginClass } from "../api/services/authServices";
+import Cookies from "js-cookie";
 
 const loginClass = new LoginClass();
 
@@ -26,6 +28,8 @@ interface SidebarProps {
 
 export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const cookie = Cookies.get("info");
+  const codUser = JSON.parse(cookie!);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -141,6 +145,20 @@ export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
           >
             Configurações
           </SidebarLink>
+          {codUser.codUser == "001" && (
+            <SidebarLink
+              href="/dashboard/novocliente"
+              icon={<Plus className="w-5 h-5" />}
+              isActive={pathname === "/dashboard/novocliente"}
+              isExpanded={isOpen}
+              onClick={() => {
+                onMenuClick();
+                if (isMobile) handleToggle();
+              }}
+            >
+              Novo Cliente
+            </SidebarLink>
+          )}
         </nav>
         <div className="p-2">
           <SidebarLink
