@@ -12,13 +12,10 @@ import {
   ChevronRight,
   Home,
 } from "lucide-react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { LoginClass } from "../api/services/authServices";
-import { SettingsSerivce } from "../api/services/settingsServices";
 
 const loginClass = new LoginClass();
-const settings = new SettingsSerivce();
 
 interface SidebarProps {
   isOpen: boolean;
@@ -29,7 +26,6 @@ interface SidebarProps {
 
 export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [logo, setLogo] = useState("/placeholder.svg?height=50&width=50");
   const pathname = usePathname();
 
   useEffect(() => {
@@ -37,18 +33,6 @@ export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
     if (storedState) {
       setIsOpen(JSON.parse(storedState));
     }
-
-    const fetchLogo = async () => {
-      try {
-        const imageUrl = await settings.fetchImage();
-        console.log("URL da imagem:", imageUrl);
-        setLogo(imageUrl);
-      } catch (error) {
-        console.error("Erro ao buscar o logo:", error);
-      }
-    };
-
-    fetchLogo();
   }, []);
 
   const handleToggle = () => {
@@ -72,11 +56,11 @@ export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
     <>
       {isMobile && !isOpen && (
         <Button
-  variant="ghost"
-  size="icon"
-  onClick={handleToggle}
-  className="fixed top-4 left-4 z-50 p-2 rounded-full bg-background shadow-md"
->
+          variant="ghost"
+          size="icon"
+          onClick={handleToggle}
+          className="fixed top-4 left-4 z-50 p-2 rounded-full bg-background shadow-md"
+        >
           <Menu className="h-6 w-6" />
         </Button>
       )}
@@ -91,28 +75,13 @@ export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
         } flex flex-col ${isOpen ? "w-64" : "w-24"}`}
       >
         <div className="p-4 flex flex-col items-center justify-center relative">
-          <div
-            className={`flex items-center justify-center transition-all duration-300 ease-in-out ${
-              isOpen ? "w-16 h-16" : "w-12 h-12"
-            }`}
-          >
-            <div className="relative w-full h-full overflow-hidden bg-muted rounded-full">
-              <Image
-                src={logo}
-                alt="Logo"
-                layout="fill"
-                objectFit="cover"
-                className="rounded-full"
-              />
-            </div>
-          </div>
           {!isMobile && (
             <Button
               variant="ghost"
               size="icon"
               onClick={handleToggle}
-              className={`absolute top-4 right-0 z-10 h-8 w-8 rounded-full border border-border bg-background p-0 hover:bg-accent hover:text-accent-foreground ${
-                isOpen ? "-right-4" : "-right-3"
+              className={`absolute top-4 z-10 h-8 w-8 rounded-full border border-border bg-background p-0 hover:bg-accent hover:text-accent-foreground ${
+                isOpen ? "-right-4" : "-right-3.5"
               }`}
             >
               {isOpen ? (
@@ -123,7 +92,7 @@ export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
             </Button>
           )}
         </div>
-        <nav className="space-y-2 p-2 flex-grow">
+        <nav className="space-y-2 py-6 p-2 flex-grow">
           <SidebarLink
             href="/dashboard/home"
             icon={<Home className="w-5 h-5" />}
@@ -221,7 +190,7 @@ function SidebarLink({
   return (
     <Link
       href={href}
-      className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors
+      className={`flex items-center space-x-2 px-4 py-3 rounded-md transition-colors
         ${
           isActive
             ? "bg-accent text-accent-foreground"

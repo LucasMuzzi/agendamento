@@ -24,28 +24,21 @@ import {
 } from "@/app/api/services/settingsServices";
 import { useToast } from "@/hooks/use-toast";
 import { AxiosError } from "axios";
-import Image from "next/image";
 import { useTheme } from "next-themes";
 import { Eye, EyeOff } from "lucide-react";
-import { ImagePreviewModal } from "@/components/ImagePreviewModal";
 
 export default function Configuracoes() {
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [servicoNovo, setServicoNovo] = useState("");
   const [servicoRemover, setServicoRemover] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [interval, setInterval] = useState("");
-  const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [isLogoSaved, setIsLogoSaved] = useState(false);
   const [serviceTypes, setServiceTypes] = useState<ServiceType[]>([]);
   const [filteredServices, setFilteredServices] = useState<any[]>([]);
   const [isListVisible, setIsListVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [settings] = useState(new SettingsSerivce());
 
   useEffect(() => {
@@ -58,15 +51,6 @@ export default function Configuracoes() {
 
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setLogoFile(file);
-      setLogoPreview(URL.createObjectURL(file));
-      setIsLogoSaved(false);
-    }
-  };
 
   const handleAddServico = async () => {
     if (servicoNovo.trim() !== "") {
@@ -137,37 +121,6 @@ export default function Configuracoes() {
     }
   };
 
-  const handleUploadLogo = async () => {
-    if (logoFile) {
-      try {
-        const response = await settings.uploadFile(logoFile);
-        console.log("Logo enviado com sucesso:", response);
-        setIsLogoSaved(true);
-        toast({
-          title: "Sucesso",
-          description: "Logo enviado com sucesso",
-          duration: 3000,
-          className: "bg-green-500 text-white",
-        });
-
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
-      } catch (error) {
-        console.error(
-          "Erro ao enviar logo:",
-          (error as AxiosError)?.response?.data || error
-        );
-        toast({
-          title: "Erro",
-          description: "Falha ao enviar logo",
-          duration: 3000,
-          variant: "destructive",
-        });
-      }
-    }
-  };
-
   const handleServicoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setServicoNovo(e.target.value);
   };
@@ -186,29 +139,6 @@ export default function Configuracoes() {
 
   const handleSelectService = (serviceName: string) => {
     setServicoRemover(serviceName);
-  };
-
-  const handleSaveLogo = async () => {
-    if (logoFile) {
-      try {
-        await handleUploadLogo();
-        setIsLogoSaved(true);
-        toast({
-          title: "Sucesso",
-          description: "Logo salvo com sucesso",
-          duration: 3000,
-          className: "bg-green-500 text-white",
-        });
-      } catch (error) {
-        console.error("Erro ao salvar logo:", error);
-        toast({
-          title: "Erro",
-          description: "Falha ao salvar logo",
-          duration: 3000,
-          variant: "destructive",
-        });
-      }
-    }
   };
 
   const handleSaveOperatingHours = async () => {
@@ -276,44 +206,6 @@ export default function Configuracoes() {
           <CardTitle>Configurações do Site</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="logo-upload">Logo do Site</Label>
-            <div className="flex items-center space-x-4">
-              <Button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                Selecionar Logo
-              </Button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                id="logo-upload"
-                accept="image/*"
-                onChange={handleLogoChange}
-                className="hidden"
-              />
-              {logoPreview && (
-                <div
-                  className="relative w-16 h-16 border border-gray-300 rounded cursor-pointer"
-                  onClick={() => setIsPreviewModalOpen(true)}
-                >
-                  <Image
-                    src={logoPreview}
-                    alt="Logo preview"
-                    layout="fill"
-                    objectFit="contain"
-                  />
-                </div>
-              )}
-              <Button
-                onClick={handleSaveLogo}
-                disabled={!logoFile || isLogoSaved}
-              >
-                Salvar Logo
-              </Button>
-            </div>
-          </div>
           <div className="space-y-2">
             <Label htmlFor="novo-servico">Adicionar Tipo de Serviço</Label>
             <div className="flex space-x-2">
@@ -426,11 +318,6 @@ export default function Configuracoes() {
             </Select>
           </div>
         </CardContent>
-        <ImagePreviewModal
-          isOpen={isPreviewModalOpen}
-          onClose={() => setIsPreviewModalOpen(false)}
-          imageUrl={logoPreview || ""}
-        />
       </Card>
     </div>
   );
