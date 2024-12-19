@@ -68,6 +68,6 @@ export class LoginClass {
 
   async logout(): Promise<void> {
     Cookies.remove("token");
-    console.log("Usuário deslogado com sucesso");
+
   }
 }

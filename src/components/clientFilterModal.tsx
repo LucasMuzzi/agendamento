@@ -36,7 +36,7 @@ export function ClientFilterModal({
   const fetchClients = async (term: string) => {
     try {
       const response = await new clientService().buscarClientesPorCodUser();
-      console.log(response);
+
       const filteredClients = response.clients.filter(
         (client) =>
           client.name.toLowerCase().includes(term.toLowerCase()) ||

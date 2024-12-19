@@ -174,7 +174,6 @@ export default function Agendamentos() {
       const settings = new SettingsSerivce();
       const scheduleData = await settings.fetchSchedule();
 
-      console.log("Schedule Data:", scheduleData);
 
       setFetchedSchedule(scheduleData.horarios || []);
     } catch (error) {
@@ -405,9 +404,7 @@ export default function Agendamentos() {
     );
   }, []);
 
-  useEffect(() => {
-    console.log("Agendamentos atualizados:", agendamentos);
-  }, [agendamentos]);
+
 
   return (
     <div

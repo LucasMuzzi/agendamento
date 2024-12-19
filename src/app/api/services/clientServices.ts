@@ -63,8 +63,6 @@ export class clientService {
       codUser,
     };
 
-    console.log(requestBody);
-
     try {
       const response = await apiAgend.post<RegisterResponse>(
         "/api/register-client",

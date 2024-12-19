@@ -68,7 +68,6 @@ export default function LoginPage() {
         className: "bg-green-500 text-white",
       });
 
-      // Delay the redirect slightly to allow the user to see the success message
       setTimeout(() => {
         router.push("/dashboard/home");
       });
