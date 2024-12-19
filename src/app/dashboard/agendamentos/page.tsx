@@ -228,6 +228,8 @@ export default function Agendamentos() {
         setIsWhatsapp(false);
         setTipoServico(serviceTypes.length > 0 ? serviceTypes[0].nome : "");
 
+        window.location.reload();
+
         toast({
           title: "Agendamento criado",
           description: "O agendamento foi criado com sucesso.",
