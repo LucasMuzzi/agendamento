@@ -27,7 +27,6 @@ export class AgendamentoService {
   async criarAgendamento(
     body: AgendamentoRequest
   ): Promise<AgendamentoResponse> {
-
     try {
       const response = await apiAgend.post<AgendamentoResponse>(
         "/api/create-appointment",

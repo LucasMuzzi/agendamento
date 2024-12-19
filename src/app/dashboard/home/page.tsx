@@ -59,7 +59,7 @@ export default function DashboardHome() {
   }, []);
 
   useEffect(() => {
-    const fetchTodayAppointments = async () => {
+    const fetchAgendamentos = async () => {
       const userCookie = Cookies.get("info");
       if (!userCookie) {
         console.error("User cookie not found");
@@ -67,39 +67,30 @@ export default function DashboardHome() {
       }
 
       const user = JSON.parse(userCookie);
-      console.log(user.codUser);
       try {
         const agendamentosData: AgendamentoResponse[] =
           await agendamentoService.buscarAgendamentos(user.codUser);
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const todayAgendamentos: any[] = agendamentosData
-          .filter((agendamento) => {
-            const agendamentoDate = new Date(agendamento.data);
-            agendamentoDate.setHours(0, 0, 0, 0);
-            return agendamentoDate.getTime() === today.getTime();
-          })
+        const agendamentosConvertidos: Agendamento[] = agendamentosData
+          .filter((agendamento) => agendamento.userId === user.codUser)
           .map((agendamento) => ({
             id: agendamento._id,
             data: new Date(agendamento.data),
             horarios: agendamento.horarios,
             nome: agendamento.nome,
             contato: agendamento.contato,
-            isWhatsapp: agendamento.isWhatsapp,
+            isWhatsapp: agendamento.isWhatsapp || false,
             tipoServico: agendamento.tipoServico,
           }));
 
-        setTodayAppointments(todayAgendamentos);
+        setTodayAppointments(agendamentosConvertidos);
       } catch (error) {
         console.error("Erro ao carregar agendamentos:", error);
       }
     };
 
-    fetchTodayAppointments();
+    fetchAgendamentos();
   }, []);
-
   const handleAgendamentoClick = useCallback((agendamento: Agendamento) => {
     setSelectedAgendamento(agendamento);
     setIsDetailsModalOpen(true);
