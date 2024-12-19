@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Trash2, Edit } from "lucide-react";
+import { PhoneIcon as WhatsappIcon } from "lucide-react";
 
 type Cliente = {
   id: string;
@@ -40,16 +41,25 @@ export function ClienteDetalhesModal({
         {cliente && (
           <div className="grid gap-4 py-4">
             <div>
-              <Label>Nome</Label>
+              <Label>Nome:</Label>
               <p>{cliente.nome}</p>
             </div>
             <div>
-              <Label>Contato</Label>
+              <Label>Contato:</Label>
               <p>{cliente.contato}</p>
             </div>
             <div>
-              <Label>WhatsApp</Label>
-              <p>{cliente.whatsapp ? "Sim" : "Não"}</p>
+              <Label>WhatsApp:</Label>
+              <a
+                href={`https://wa.me/${cliente.contato.replace(/\D/g, "")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
+                <WhatsappIcon className="h-5 w-5 text-green-500 ml-2 mt-1" />
+              </a>
             </div>
           </div>
         )}

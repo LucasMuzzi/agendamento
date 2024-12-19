@@ -191,27 +191,41 @@ export default function DashboardHome() {
           {selectedAgendamento && (
             <div className="grid gap-4 py-4">
               <div>
-                <Label>Data</Label>
+                <Label>Data:</Label>
                 <p>{selectedAgendamento.data.toLocaleDateString("pt-BR")}</p>
               </div>
               <div>
-                <Label>Horários</Label>
+                <Label>Horário:</Label>
                 <p>{selectedAgendamento.horarios.join(", ")}</p>
               </div>
               <div>
-                <Label>Nome</Label>
+                <Label>Nome:</Label>
                 <p>{selectedAgendamento.nome}</p>
               </div>
               <div>
-                <Label>Contato</Label>
+                <Label>Contato:</Label>
                 <p>{selectedAgendamento.contato}</p>
               </div>
               <div>
-                <Label>WhatsApp?</Label>
-                <p>{selectedAgendamento.isWhatsapp ? "Sim" : "Não"}</p>
+                <Label>WhatsApp:</Label>
+                {selectedAgendamento.isWhatsapp && (
+                  <a
+                    href={`https://wa.me/${selectedAgendamento.contato.replace(
+                      /\D/g,
+                      ""
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    <WhatsappIcon className="h-5 w-5 text-green-500 ml-2 mt-1" />
+                  </a>
+                )}
               </div>
               <div>
-                <Label>Tipo de Serviço</Label>
+                <Label>Tipo de Serviço:</Label>
                 <p>{selectedAgendamento.tipoServico}</p>
               </div>
             </div>

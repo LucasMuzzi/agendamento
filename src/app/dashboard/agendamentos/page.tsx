@@ -174,7 +174,6 @@ export default function Agendamentos() {
       const settings = new SettingsSerivce();
       const scheduleData = await settings.fetchSchedule();
 
-
       setFetchedSchedule(scheduleData.horarios || []);
     } catch (error) {
       console.error("Erro ao buscar horários:", error);
@@ -354,6 +353,7 @@ export default function Agendamentos() {
   const handleDeleteHorario = useCallback(
     async (id: string, horario: string) => {
       try {
+        setIsLoading(true);
         await agendamentoService.deletarHorario(id, horario);
 
         setAgendamentos((prev) => {
@@ -369,6 +369,8 @@ export default function Agendamentos() {
         });
       } catch (error) {
         console.error("Erro ao deletar horário:", error);
+      } finally {
+        setIsLoading(false);
       }
     },
     [agendamentoService]
@@ -404,18 +406,12 @@ export default function Agendamentos() {
     );
   }, []);
 
-
-
   return (
     <div
       className={`container mx-auto p-4 ${
         isMobile ? "mt-12" : ""
       } agendamento-layout`}
     >
-      {isLoading &&
-        !isTimeModalOpen &&
-        !isFormModalOpen &&
-        !isDetailsModalOpen && <LoadingScreen />}
       <div className="flex flex-col lg:flex-row gap-2 items-start relative z-10">
         <Card className={`calendar-card flex-shrink-0`}>
           <CardHeader className="py-2">
@@ -466,7 +462,7 @@ export default function Agendamentos() {
             </Button>
           </CardContent>
         </Card>
-        {/* Tabela de Agendamentos */}
+
         <Card className="schedule-card overflow-hidden h-[calc(44vh-2rem)] lg:h-[calc(100vh-2rem)]">
           <CardHeader>
             <CardTitle>
@@ -536,7 +532,7 @@ export default function Agendamentos() {
                             onClick={(e) => {
                               e.stopPropagation();
                             }}
-                            className={`${isMobile ? "flex pl-7" : ""}`}
+                            className={`${isMobile ? "flex pl-6" : ""}`}
                           >
                             <WhatsappIcon className="h-5 w-5 text-green-500" />
                           </a>
@@ -581,7 +577,6 @@ export default function Agendamentos() {
       <Dialog open={isFormModalOpen} onOpenChange={setIsFormModalOpen}>
         <DialogContent className="max-w-md z-50">
           {" "}
-          {/* Ajuste da largura */}
           <DialogHeader>
             <DialogTitle>
               Agendar: {selectedDate?.toLocaleDateString()} -{" "}
@@ -597,7 +592,7 @@ export default function Agendamentos() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsClientFilterModalOpen(true)}
-                className="w-auto " // Ajuste a largura do botão
+                className="w-auto "
               >
                 <FaRegUser className="h-4 w-4" />
                 <span className="sr-only">Filtrar Clientes</span>
@@ -662,7 +657,6 @@ export default function Agendamentos() {
           <DialogFooter>
             <div className="flex justify-between gap-2">
               {" "}
-              {/* Contêiner flexível para os botões */}
               <Button
                 variant="outline"
                 onClick={() => {
@@ -688,7 +682,7 @@ export default function Agendamentos() {
           {selectedAgendamento && (
             <div className="grid gap-4 py-4">
               <div>
-                <Label>Data</Label>
+                <Label>Data:</Label>
                 <p>
                   {selectedAgendamento.data instanceof Date
                     ? selectedAgendamento.data.toLocaleDateString()
@@ -696,23 +690,37 @@ export default function Agendamentos() {
                 </p>
               </div>
               <div>
-                <Label>Horários</Label>
+                <Label>Horário:</Label>
                 <p>{selectedAgendamento.horarios.join(", ")}</p>
               </div>
               <div>
-                <Label>Nome</Label>
+                <Label>Nome:</Label>
                 <p>{selectedAgendamento.nome}</p>
               </div>
               <div>
-                <Label>Contato</Label>
+                <Label>Contato:</Label>
                 <p>{selectedAgendamento.contato}</p>
               </div>
               <div>
-                <Label>WhatsApp?</Label>
-                <p>{selectedAgendamento.isWhatsapp ? "Sim" : "Não"}</p>
+                <Label>WhatsApp:</Label>
+                {selectedAgendamento.isWhatsapp && (
+                  <a
+                    href={`https://wa.me/${selectedAgendamento.contato.replace(
+                      /\D/g,
+                      ""
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    <WhatsappIcon className="h-5 w-5 text-green-500 ml-2 mt-1" />
+                  </a>
+                )}
               </div>
               <div>
-                <Label>Tipo de Serviço</Label>
+                <Label>Tipo de Serviço:</Label>
                 <p>{selectedAgendamento.tipoServico}</p>
               </div>
             </div>
