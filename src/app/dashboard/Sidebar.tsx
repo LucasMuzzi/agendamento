@@ -29,7 +29,7 @@ interface SidebarProps {
 export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const cookie = Cookies.get("info");
-  const codUser = JSON.parse(cookie!);
+  const codUser = cookie ? JSON.parse(cookie) : null;
   const pathname = usePathname();
 
   useEffect(() => {
@@ -145,7 +145,7 @@ export default function Sidebar({ isMobile, onMenuClick }: SidebarProps) {
           >
             Configurações
           </SidebarLink>
-          {codUser.codUser == "001" && (
+          {codUser && codUser.codUser === "001" && (
             <SidebarLink
               href="/dashboard/novocliente"
               icon={<Plus className="w-5 h-5" />}
