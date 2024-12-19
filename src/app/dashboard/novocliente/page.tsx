@@ -25,6 +25,14 @@ import {
 } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { newClienteService } from "@/app/api/services/newClientService";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Edit, Trash2 } from "lucide-react";
 
 interface ClientData {
   name: string;
@@ -44,6 +52,9 @@ export default function ClientManagement() {
   const [clients, setClients] = useState<ClientData[]>([]);
   const { toast } = useToast();
   const [isMobile, setIsMobile] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -134,6 +145,88 @@ export default function ClientManagement() {
     }
   };
 
+  const handleRowClick = (client: ClientData) => {
+    setSelectedClient(client);
+    setIsDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setIsDialogOpen(false);
+    setSelectedClient(null); // Limpa o cliente selecionado ao fechar o diálogo
+  };
+
+  const handleEditClick = () => {
+    if (selectedClient) {
+      setClientData(selectedClient); // Preenche os dados do cliente no formulário de edição
+      setIsEditDialogOpen(true); // Abre o diálogo de edição
+    }
+  };
+
+  const handleEditDialogClose = () => {
+    setIsEditDialogOpen(false);
+    setClientData({
+      name: "",
+      email: "",
+      password: "",
+      codUser: "",
+    });
+  };
+
+  // const handleUpdateClient = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   if (
+  //     !clientData.name ||
+  //     !clientData.email ||
+  //     !clientData.password ||
+  //     !clientData.codUser
+  //   ) {
+  //     toast({
+  //       title: "Erro de validação",
+  //       description: "Por favor, preencha todos os campos.",
+  //       variant: "destructive",
+  //     });
+  //     return;
+  //   }
+
+  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  //   if (!emailRegex.test(clientData.email)) {
+  //     toast({
+  //       title: "Erro de validação",
+  //       description: "Por favor, insira um email válido.",
+  //       variant: "destructive",
+  //     });
+  //     return;
+  //   }
+
+  //   try {
+  //     const response = await clientService.updateClient(
+  //       selectedClient?.id,
+  //       clientData
+  //     ); // Supondo que você tenha um método para atualizar o cliente
+  //     setClients((prevClients) =>
+  //       prevClients.map((client) =>
+  //         client._id === response.id ? response : client
+  //       )
+  //     );
+
+  //     toast({
+  //       title: "Cliente atualizado",
+  //       description: "Os dados do cliente foram atualizados com sucesso.",
+  //       duration: 3000,
+  //       className: "bg-green-500 text-white",
+  //     });
+
+  //     handleEditDialogClose(); // Fecha o diálogo de edição
+  //   } catch (error) {
+  //     toast({
+  //       title: "Erro",
+  //       description: "Ocorreu um erro ao atualizar o cliente. Tente novamente.",
+  //       variant: "destructive",
+  //     });
+  //   }
+  // };
+
   return (
     <div className="container mx-auto p-4">
       <div className="flex flex-col lg:flex-row gap-6 h-full">
@@ -187,7 +280,7 @@ export default function ClientManagement() {
                 <Label htmlFor="codUser">Código de Usuário</Label>
                 <Input
                   id="codUser"
-                  name="codUser"
+                  name="                  codUser"
                   value={clientData.codUser}
                   onChange={handleInputChange}
                   placeholder="Informe o código de usuário"
@@ -221,11 +314,15 @@ export default function ClientManagement() {
                 </TableHeader>
                 <TableBody>
                   {clients.map((client, index) => (
-                    <TableRow key={index}>
+                    <TableRow
+                      key={index}
+                      onClick={() => handleRowClick(client)}
+                      className="cursor-pointer hover:bg-gray-100"
+                    >
                       <TableCell>
                         {isMobile ? client.name.split(" ")[0] : client.name}
                       </TableCell>
-                      {!isMobile && <TableCell>{client.email}</TableCell>}
+                      <TableCell>{client.email}</TableCell>
                       <TableCell>{client.codUser}</TableCell>
                     </TableRow>
                   ))}
@@ -235,6 +332,99 @@ export default function ClientManagement() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Diálogo para exibir detalhes do cliente */}
+      <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Detalhes do Cliente</DialogTitle>
+          </DialogHeader>
+          {selectedClient && (
+            <div className="grid gap-4 py-4">
+              <div>
+                <Label>Nome:</Label>
+                <p>{selectedClient.name}</p>
+              </div>
+              <div>
+                <Label>Email:</Label>
+                <p>{selectedClient.email}</p>
+              </div>
+              <div>
+                <Label>Código de Usuário:</Label>
+                <p>{selectedClient.codUser}</p>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <div className="flex justify-between gap-2">
+              <Button variant="ghost" size="icon" onClick={handleEditClick}>
+                <Edit className="h-4 w-4" />
+                <span className="sr-only">Editar</span>
+              </Button>
+              <Button variant="ghost" size="icon" onClick={(e) => {}}>
+                <Trash2 className="h-4 w-4 text-red-500" />
+                <span className="sr-only">Deletar</span>
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isEditDialogOpen} onOpenChange={handleEditDialogClose}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Editar Cliente</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={() => {}}>
+            <div className="grid gap-4 py-4">
+              <div>
+                <Label htmlFor="edit-name">Nome</Label>
+                <Input
+                  id="edit-name"
+                  name="name"
+                  value={clientData.name}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-email">Email</Label>
+                <Input
+                  id="edit-email"
+                  name="email"
+                  type="email"
+                  value={clientData.email}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-password">Senha</Label>
+                <Input
+                  id="edit-password"
+                  name="password"
+                  type="password"
+                  value={clientData.password}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-codUser">Código de Usuário</Label>
+                <Input
+                  id="edit-codUser"
+                  name="codUser"
+                  value={clientData.codUser}
+                  onChange={handleInputChange}
+                  placeholder="Informe o código de usuário"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit" className="w-full">
+                Alterar
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
