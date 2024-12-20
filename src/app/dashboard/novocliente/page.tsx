@@ -333,7 +333,6 @@ export default function ClientManagement() {
         </Card>
       </div>
 
-      {/* Diálogo para exibir detalhes do cliente */}
       <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
         <DialogContent className="max-w-md">
           <DialogHeader>
